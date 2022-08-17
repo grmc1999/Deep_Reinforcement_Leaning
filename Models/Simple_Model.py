@@ -19,7 +19,7 @@ class Neural_Net_Actor(nn.Module):
         self.activator_1=nn.GELU()
         self.activator_5=nn.Softmax()
 
-        self.model.losses={"loss":0}
+        self.losses={"loss":0}
     
     def forward(self,state):
         state=self.activator_1(self.layer_1(state))
