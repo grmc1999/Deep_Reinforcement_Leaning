@@ -29,6 +29,9 @@ class Neural_Net_Actor(nn.Module):
         state=self.activator_5(self.layer_5(state))
         return state
 
+    def act(self,state):
+        return self.forward(state)
+        
     def REINFORCE_loss(self,returns,states,actions):
         """
         returns: lambda return per steps in batched episodes [ steps_in_episode*episodes*batch_size ]

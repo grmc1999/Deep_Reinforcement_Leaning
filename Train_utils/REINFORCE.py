@@ -52,7 +52,7 @@ class REINFORCE(object):
             s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
             if self.cuda:
                 s=s.cuda()
-            pa=self.model.Action(s)
+            pa=self.model.act(s)
             sampler=Categorical(pa)
             a=sampler.sample()
 
