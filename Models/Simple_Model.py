@@ -1,0 +1,47 @@
+from turtle import forward
+import torch
+from torch import nn
+import numpy as np
+import torch.nn.functional as F
+
+class Neural_Net_Actor(nn.Module):
+    def __init__(self,state_size,action_size,gamma):
+        super(Neural_Net_Actor,self).__init__()
+        self.gamma=gamma
+        self.state_size=state_size
+        self.action_size=action_size
+        self.layer_1=nn.Linear(state_size,50)
+        self.layer_2=nn.Linear(50,50)
+        self.layer_3=nn.Linear(50,25)
+        self.layer_4=nn.Linear(25,12)
+        self.layer_5=nn.Linear(12,action_size)
+
+        self.activator_1=nn.GELU()
+        self.activator_5=nn.Softmax()
+
+        self.model.losses={"loss":0}
+    
+    def forward(self,state):
+        state=self.activator_1(self.layer_1(state))
+        state=self.activator_1(self.layer_2(state))
+        state=self.activator_1(self.layer_3(state))
+        state=self.activator_1(self.layer_4(state))
+        state=self.activator_5(self.layer_5(state))
+        return state
+
+    def REINFORCE_loss(self,returns,states,actions):
+        """
+        returns: lambda return per steps in batched episodes [ steps_in_episode*episodes*batch_size ]
+        states: states per steps in batched episodes [ steps_in_episode*episodes*batch_size ]
+        OUTPUTS:
+            Losess: Losses per episode
+        """
+        actions=self.forward(states) # [ steps_in_episode*episodes*batch_size, action_size ]
+        logprobs=torch.log(actions)
+        selected_logprobs=logprobs[np.arange(len(actions.shape[0])),actions]
+        losses=-returns*selected_logprobs
+
+        return losses #
+        
+        
+
