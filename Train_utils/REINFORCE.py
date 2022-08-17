@@ -41,10 +41,10 @@ class REINFORCE(object):
 
     def run_episode(self):
         u=self.free_input
-        s, reward, done, _=self.env.reset()
+        s=self.env.reset()
         self.episodes_states[self.current_episode]=[s]
         self.episodes_action[self.current_episode]=[u]
-        self.episodes_rewards[self.current_episode]=[reward]
+        self.episodes_rewards[self.current_episode]=[0]#consider size of rewards equal to 1 less than action and states
 
 
         #Generate episode
