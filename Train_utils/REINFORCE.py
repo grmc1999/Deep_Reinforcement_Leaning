@@ -36,7 +36,7 @@ class REINFORCE(object):
         tm=np.arange(1,Rs.shape[0]+1)-np.arange(Rs.shape[0]).reshape(-1,1)
         zf=(tm>0)
         tm=(gamma_w**tm)*zf
-        Rs=np.tile(Rs,(Rs.reshape[0],1))
+        Rs=np.tile(Rs,(Rs.shape[0],1))
         return (Rs*tm).sum(1)
 
     def run_episode(self):
