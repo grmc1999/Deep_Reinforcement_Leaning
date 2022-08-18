@@ -91,7 +91,7 @@ class REINFORCE(object):
             losses=self.model.REINFORCE_loss(
             returns=returns_batch,
             states=states_batch,
-            actions=action_batch
+            sampled_actions=action_batch
           )
             self.optim.zero_grad()
           #TODO: for generalization implement compute losses
