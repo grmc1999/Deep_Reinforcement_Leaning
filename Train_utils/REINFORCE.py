@@ -102,7 +102,7 @@ class REINFORCE(object):
             self.episodes_losses[self.current_batch-1]["loss"]=losses.cpu().item()
 
             msg= ("\n").join(
-                [k+" {l:.8f}".format(l=(np.mean(np.vectorize(lambda x,loss: x[loss] )(np.array(self.episodes_losses[self.current_episode-1][k]),k)))) for k in self.model.losses.keys()] \
+                [k+" {l:.8f}".format(l=(np.mean(np.vectorize(lambda x,loss: x[loss] )(np.array(self.episodes_losses[self.current_batch-1][k]),k)))) for k in self.model.losses.keys()] \
                 + ["Rewards mean {rm:.8f} Rewards std {rstd:.8f} Rewards sum {rs:.8f}".format(
                                rm=np.mean(np.array(self.episodes_rewards[self.current_episode-1])),
                                rstd=np.std(np.array(self.episodes_rewards[self.current_episode-1])),
