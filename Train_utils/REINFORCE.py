@@ -15,7 +15,7 @@ class REINFORCE(object):
         self.episodes_action={}
         self.episodes_rewards={} #{1: [r1 r2 r3 ... ]]}
         self.episodes_returns={}
-        self.episodes_losses={} #{1: {"loss1":,"loss2":}}
+        self.episodes_losses={0:"loss"} #{1: {"loss1":,"loss2":}}
         self.ep_limit=ep_limit
         self.free_input=free_input
         self.env=env
@@ -99,7 +99,7 @@ class REINFORCE(object):
             losses=losses.mean()
             losses.backward()
             self.optim.step()
-            self.episodes_losses[self.current_batch-1]["loss"]=losses.cpu().item()
+            self.episodes_losses[self.current_batch-1]={"loss":losses.cpu().item()}
 
             msg= ("\n").join(
                 [k+" {l:.8f}".format(l=(np.mean(np.vectorize(lambda x,loss: x[loss] )(np.array(self.episodes_losses[self.current_batch-1][k]),k)))) for k in self.model.losses.keys()] \
