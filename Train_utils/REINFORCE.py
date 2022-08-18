@@ -10,7 +10,7 @@ from torch.distributions import Categorical
 # View Returns calculation as a weigthing of losses, the return computation is implemented per training framework
 
 class REINFORCE(object):
-    def __init__(self,model,ep_limit,free_input,env,gamma,optimizer_params,batch_size=1,cuda=False):
+    def __init__(self,model,ep_limit,free_input,env,gamma,optimizer_params,res_dir,batch_size=1,cuda=False):
         self.episodes_states={}
         self.episodes_action={}
         self.episodes_rewards={} #{1: [r1 r2 r3 ... ]]}
