@@ -17,7 +17,7 @@ class Neural_Net_Actor(nn.Module):
         self.layer_5=nn.Linear(12,action_size)
 
         self.activator_1=nn.GELU()
-        self.activator_5=nn.Softmax()
+        self.activator_5=nn.Softmax(dim=-1)
 
         self.losses={"loss":0}
     
