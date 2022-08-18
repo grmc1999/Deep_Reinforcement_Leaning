@@ -118,7 +118,7 @@ class REINFORCE(object):
             np.save(os.path.join(self.res_dir,' STATES.npy'), self.episodes_states)
             np.save(os.path.join(self.res_dir,' ACTIONS.npy'), self.episodes_action)
             np.save(os.path.join(self.res_dir,' REWARDS.npy'), self.episodes_rewards)
-            np.save(os.path.join(self.res_dir,' LOSSES.npy'), self.episode_losses) 
+            np.save(os.path.join(self.res_dir,' LOSSES.npy'), self.episodes_losses) 
 
 
           
