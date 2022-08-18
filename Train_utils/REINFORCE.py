@@ -26,6 +26,7 @@ class REINFORCE(object):
         self.batch_size=batch_size
         self.current_episode=0
         self.current_batch=0
+        self.device=("cuda" if cuda else "cpu")
 
     #def action(self):
     def compute_return(self,Rs,gamma_w):
@@ -72,10 +73,10 @@ class REINFORCE(object):
 
             
         episode_list=np.arange(self.batch_size)+self.batch_size*self.current_batch
-        states_batch=np.concatenate(list(map(self.episodes_states.get,episode_list)))
-        action_batch=np.concatenate(list(map(self.episodes_action.get,episode_list)))
-        rewards_batch=np.concatenate(list(map(self.episodes_rewards.get,episode_list)))
-        returns_batch=np.concatenate(list(map(self.episodes_returns.get,episode_list)))
+        states_batch=torch.from_numpy(np.concatenate(list(map(self.episodes_states.get,episode_list)))).float().to(self.device)
+        action_batch=torch.from_numpy(np.concatenate(list(map(self.episodes_action.get,episode_list)))).float().to(self.device)
+        rewards_batch=torch.from_numpy(np.concatenate(list(map(self.episodes_rewards.get,episode_list)))).float().to(self.device)
+        returns_batch=torch.from_numpy(np.concatenate(list(map(self.episodes_returns.get,episode_list)))).float().to(self.device)
         return states_batch,action_batch,rewards_batch,returns_batch
 
 
