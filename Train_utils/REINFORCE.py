@@ -96,7 +96,7 @@ class REINFORCE(object):
             self.optim.zero_grad()
           #TODO: for generalization implement compute losses
             losses=losses.mean()
-            losses.backwards()
+            losses.backward()
             self.optim.step()
             self.episodes_losses[self.current_episode]["loss"]=losses.cpu().item()
 
