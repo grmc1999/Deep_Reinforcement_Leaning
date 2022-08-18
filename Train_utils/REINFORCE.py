@@ -57,6 +57,7 @@ class REINFORCE(object):
             pa=self.model.act(s)
             sampler=Categorical(pa)
             a=sampler.sample()
+            print(a)
 
             s, reward, done, _=self.env.step(a.item())
             self.episodes_states[self.current_episode].append(s)
