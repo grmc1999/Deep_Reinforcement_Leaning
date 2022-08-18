@@ -55,6 +55,7 @@ class REINFORCE(object):
             if self.cuda:
                 s=s.cuda()
             pa=self.model.act(s)
+            print(pa)
             sampler=Categorical(pa)
             a=sampler.sample()
             print(a)
