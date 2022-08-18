@@ -73,6 +73,7 @@ class REINFORCE(object):
 
             
         episode_list=np.arange(self.batch_size)+self.batch_size*self.current_batch
+        self.current_batch=self.current_batch+1
         states_batch=torch.from_numpy(np.concatenate(list(map(self.episodes_states.get,episode_list)))).float().to(self.device)
         action_batch=torch.from_numpy(np.concatenate(list(map(self.episodes_action.get,episode_list)))).long().to(self.device)
         rewards_batch=torch.from_numpy(np.concatenate(list(map(self.episodes_rewards.get,episode_list)))).float().to(self.device)
@@ -98,7 +99,7 @@ class REINFORCE(object):
             losses=losses.mean()
             losses.backward()
             self.optim.step()
-            self.episodes_losses[self.current_episode-1]["loss"]=losses.cpu().item()
+            self.episodes_losses[self.current_batch-1]["loss"]=losses.cpu().item()
 
             msg= ("\n").join(
                 [k+" {l:.8f}".format(l=(np.mean(np.vectorize(lambda x,loss: x[loss] )(np.array(self.episodes_losses[self.current_episode-1][k]),k)))) for k in self.model.losses.keys()] \
