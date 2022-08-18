@@ -27,6 +27,7 @@ class REINFORCE(object):
         self.current_episode=0
         self.current_batch=0
         self.device=("cuda" if cuda else "cpu")
+        self.res_dir=res_dir
 
     #def action(self):
     def compute_return(self,Rs,gamma_w):
