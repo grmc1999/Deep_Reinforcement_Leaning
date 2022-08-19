@@ -94,8 +94,8 @@ class REINFORCE(object):
         self.optim = torch.optim.Adam(self.model.parameters(), **(self.optimizer_params))
 
         for batch in tqdm(range(train_batches)):
-            states_batch,action_batch,rewards_batch,returns_batch=self.batch_episodes()
             self.optim.zero_grad()
+            states_batch,action_batch,rewards_batch,returns_batch=self.batch_episodes()
 
             losses=self.model.REINFORCE_loss(
             returns=returns_batch,
