@@ -35,8 +35,8 @@ class REINFORCE(object):
         return np.sum(gamma_w*Rs)
 
     def compute_episode_returns(self,Rs,gamma_w):
-        tm=np.arange(1,Rs.shape[0]+1)-np.arange(Rs.shape[0]).reshape(-1,1)
-        zf=(tm>0)
+        tm=np.arange(0,Rs.shape[0])-np.arange(Rs.shape[0]).reshape(-1,1)
+        zf=(tm>=0)
         tm=(gamma_w**tm)*zf
         Rs=np.tile(Rs,(Rs.shape[0],1))
         return (Rs*tm).sum(1)
