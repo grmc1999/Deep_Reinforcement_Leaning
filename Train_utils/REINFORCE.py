@@ -104,7 +104,7 @@ class REINFORCE(object):
           )
             
           #TODO: for generalization implement compute losses
-            losses=losses.mean()
+            losses=-(losses.mean())
             print("\n loss mean")
             print(losses)
             losses.backward()
