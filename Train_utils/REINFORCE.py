@@ -89,13 +89,14 @@ class REINFORCE(object):
 
         for batch in tqdm(range(train_batches)):
             states_batch,action_batch,rewards_batch,returns_batch=self.batch_episodes()
+            self.optim.zero_grad()
 
             losses=self.model.REINFORCE_loss(
             returns=returns_batch,
             states=states_batch,
             sampled_actions=action_batch
           )
-            self.optim.zero_grad()
+            
           #TODO: for generalization implement compute losses
             losses=-losses.mean()
             losses.backward()
