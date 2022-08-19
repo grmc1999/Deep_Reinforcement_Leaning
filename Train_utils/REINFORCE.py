@@ -64,7 +64,7 @@ class REINFORCE(object):
             self.episodes_rewards[self.current_episode].append(reward)
             if done:
                 break
-        self.episodes_returns[self.current_episode]=self.compute_episode_returns(np.array(self.episodes_rewards[self.current_episode]),
+        self.episodes_returns[self.current_episode]=self.compute_episode_returns(np.array(self.episodes_rewards[self.current_episode][1:]),
                                     self.gamma)
         self.current_episode=self.current_episode+1
 
