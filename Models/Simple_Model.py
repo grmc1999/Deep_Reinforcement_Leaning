@@ -54,6 +54,8 @@ class Neural_Net_Actor(nn.Module):
         #selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
         #losses=returns*selected_logprobs
         losses=((returns.detach())*logprobs[np.arange(len(sampled_actions)),sampled_actions])
+        print("\ selected probs")
+        print(logprobs[np.arange(len(sampled_actions)),sampled_actions])
         print("\n losses")
         print(losses)
 
