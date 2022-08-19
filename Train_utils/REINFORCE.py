@@ -105,6 +105,8 @@ class REINFORCE(object):
             
           #TODO: for generalization implement compute losses
             losses=losses.mean()
+            print("\n loss mean")
+            print(losses)
             losses.backward()
             self.optim.step()
             self.episodes_losses[self.current_batch-1]={"loss":losses.cpu().item()}
