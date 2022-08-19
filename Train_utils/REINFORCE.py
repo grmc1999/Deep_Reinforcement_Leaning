@@ -81,10 +81,10 @@ class REINFORCE(object):
             
         episode_list=np.arange(self.batch_size)+self.batch_size*self.current_batch
         self.current_batch=self.current_batch+1
-        states_batch=torch.Tensor(np.concatenate(list(map(self.episodes_states.get,episode_list)))).float().to(self.device)
-        action_batch=torch.Tensor(np.concatenate(list(map(self.episodes_action.get,episode_list)))).long().to(self.device)
-        rewards_batch=torch.Tensor(np.concatenate(list(map(self.episodes_rewards.get,episode_list)))).float().to(self.device)
-        returns_batch=torch.Tensor(np.concatenate(list(map(self.episodes_returns.get,episode_list)))).float().to(self.device)
+        states_batch=torch.Tensor(np.concatenate(list(map(self.episodes_states.get,episode_list))),requires_grad=False).float().to(self.device)
+        action_batch=torch.Tensor(np.concatenate(list(map(self.episodes_action.get,episode_list))),requires_grad=False).long().to(self.device)
+        rewards_batch=torch.Tensor(np.concatenate(list(map(self.episodes_rewards.get,episode_list))),requires_grad=False).float().to(self.device)
+        returns_batch=torch.Tensor(np.concatenate(list(map(self.episodes_returns.get,episode_list))),requires_grad=False).float().to(self.device)
         return states_batch,action_batch,rewards_batch,returns_batch
 
 
