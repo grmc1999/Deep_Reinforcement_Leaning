@@ -109,7 +109,8 @@ class REINFORCE(object):
             print(batch_loss)
             batch_loss.backward()
             self.optim.step()
-            self.episodes_losses[self.current_batch-1]={"loss":losses.detach().cpu().numpy()}
+            #self.episodes_losses[self.current_batch-1]={"loss":losses.detach().cpu().numpy()}
+            self.episodes_losses[self.current_batch-1]={"loss":batch_loss.detach().cpu().item()}
 
             msg= ("\n").join(
                 #[k+" {l:.8f}".format(l=(np.mean(np.vectorize(lambda x,loss: x[loss] )(np.array(self.episodes_losses[self.current_batch-1][k]),k)))) for k in self.model.losses.keys()] \
