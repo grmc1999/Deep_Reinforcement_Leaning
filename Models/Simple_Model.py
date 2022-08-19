@@ -10,14 +10,14 @@ class Neural_Net_Actor(nn.Module):
         self.gamma=gamma
         self.state_size=state_size
         self.action_size=action_size
-        self.layer_1=nn.Linear(state_size,10)
+        self.layer_1=nn.Linear(state_size,16)
         self.layer_2=nn.Linear(10,50)
         self.layer_3=nn.Linear(50,50)
         self.layer_4=nn.Linear(50,25)
         self.layer_5=nn.Linear(25,12)
         self.layer_6=nn.Linear(12,12)
-        self.layer_7=nn.Linear(12,6)
-        self.layer_8=nn.Linear(6,action_size)
+        self.layer_7=nn.Linear(16,6)
+        self.layer_8=nn.Linear(16,action_size)
 
         self.activator_1=nn.LeakyReLU()
         self.activator_5=nn.Softmax(dim=-1  )
@@ -26,12 +26,12 @@ class Neural_Net_Actor(nn.Module):
     
     def forward(self,state):
         state=self.activator_1(self.layer_1(state))
-        state=self.activator_1(self.layer_2(state))
-        state=self.activator_1(self.layer_3(state))
-        state=self.activator_1(self.layer_4(state))
-        state=self.activator_1(self.layer_5(state))
-        state=self.activator_1(self.layer_6(state))
-        state=self.activator_1(self.layer_7(state))
+        #state=self.activator_1(self.layer_2(state))
+        #state=self.activator_1(self.layer_3(state))
+        #state=self.activator_1(self.layer_4(state))
+        #state=self.activator_1(self.layer_5(state))
+        #state=self.activator_1(self.layer_6(state))
+        #state=self.activator_1(self.layer_7(state))
         state=self.activator_5(self.layer_8(state))
         return state
 
