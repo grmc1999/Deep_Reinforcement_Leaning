@@ -103,7 +103,7 @@ class REINFORCE(object):
             #sampled_actions=action_batch
             #)
 
-            actions=self.forward(states_batch) # [ steps_in_episode*episodes*batch_size, action_size ]
+            actions=self.model.forward(states_batch) # [ steps_in_episode*episodes*batch_size, action_size ]
             print("\n actions")
             print(actions)
             logprobs=torch.log(actions)
