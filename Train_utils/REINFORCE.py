@@ -97,11 +97,25 @@ class REINFORCE(object):
             self.optim.zero_grad()
             states_batch,action_batch,rewards_batch,returns_batch=self.batch_episodes()
 
-            losses=self.model.REINFORCE_loss(
-            returns=returns_batch,
-            states=states_batch,
-            sampled_actions=action_batch
-          )
+            #losses=self.model.REINFORCE_loss(
+            #returns=returns_batch,
+            #states=states_batch,
+            #sampled_actions=action_batch
+            #)
+
+            actions=self.forward(states_batch) # [ steps_in_episode*episodes*batch_size, action_size ]
+            print("\n actions")
+            print(actions)
+            logprobs=torch.log(actions)
+            print("\n log probs")
+            print(logprobs)
+            #selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
+            #losses=returns*selected_logprobs
+            losses=((returns_batch.detach())*logprobs[np.arange(len(action_batch)),action_batch])
+            print("\ selected probs")
+            print(logprobs[np.arange(len(action_batch)),action_batch])
+            print("\n losses")
+            print(losses)
             
           #TODO: for generalization implement compute losses
             batch_loss=-(losses.mean())
