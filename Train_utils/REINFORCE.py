@@ -28,6 +28,8 @@ class REINFORCE(object):
         self.current_batch=0
         self.device=("cuda" if cuda else "cpu")
         self.res_dir=res_dir
+        if cuda:
+            self.model.cuda()
 
     #def action(self):
     def compute_return(self,Rs,gamma_w):
@@ -106,8 +108,6 @@ class REINFORCE(object):
             
           #TODO: for generalization implement compute losses
             batch_loss=(losses.mean())
-            print("\n loss mean")
-            print(batch_loss)
             batch_loss.backward()
             self.optim.step()
             #self.episodes_losses[self.current_batch-1]={"loss":losses.detach().cpu().numpy()}
