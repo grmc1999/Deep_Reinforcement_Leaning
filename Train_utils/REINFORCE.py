@@ -112,7 +112,9 @@ class REINFORCE(object):
             #selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
             #losses=returns*selected_logprobs
             losses=((returns_batch.detach())*logprobs[np.arange(len(action_batch)),action_batch])
-            print("\ selected probs")
+            print("\n batch returns")
+            print(returns_batch)
+            print("\n selected probs")
             print(logprobs[np.arange(len(action_batch)),action_batch])
             print("\n losses")
             print(losses)
