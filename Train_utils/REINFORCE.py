@@ -57,6 +57,7 @@ class REINFORCE(object):
 
         #Generate episode
         for ep_step in tqdm(range(self.ep_limit+1)):
+            self.episodes_states[self.current_episode].append(s)
             s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
             if self.cuda:
                 s=s.cuda()
@@ -64,7 +65,7 @@ class REINFORCE(object):
             sampler=Categorical(pa)
             a=sampler.sample().detach()
 
-            self.episodes_states[self.current_episode].append(torch.from_numpy(s).float().unsqueeze(0))
+            
             s, reward, done, _=self.env.step(a.item())
             self.episodes_action[self.current_episode].append(a.item())
             self.episodes_rewards[self.current_episode].append(reward)
