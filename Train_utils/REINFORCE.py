@@ -106,18 +106,23 @@ class REINFORCE(object):
             actions=self.model.forward(states_batch) # [ steps_in_episode*episodes*batch_size, action_size ]
             print("\n actions")
             print(actions)
+            print(actions.shape)
             logprobs=torch.log(actions)
             print("\n log probs")
             print(logprobs)
+            print(logprobs.shape)
             #selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
             #losses=returns*selected_logprobs
             losses=((returns_batch.detach())*logprobs[np.arange(len(action_batch)),action_batch])
             print("\n batch returns")
             print(returns_batch)
+            print(returns_batch.shape)
             print("\n selected probs")
             print(logprobs[np.arange(len(action_batch)),action_batch])
+            print(logprobs[np.arange(len(action_batch)),action_batch].shape)
             print("\n losses")
             print(losses)
+            print(losses.shape)
             
           #TODO: for generalization implement compute losses
             batch_loss=-(losses.mean())
