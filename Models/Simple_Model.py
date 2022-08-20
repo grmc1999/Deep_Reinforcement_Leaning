@@ -11,7 +11,7 @@ class Neural_Net_Actor(nn.Module):
         self.state_size=state_size
         self.action_size=action_size
         self.layer_1=nn.Linear(state_size,16)
-        self.layer_2=nn.Linear(10,50)
+        self.layer_2=nn.Linear(16,50)
         self.layer_3=nn.Linear(50,50)
         self.layer_4=nn.Linear(50,25)
         self.layer_5=nn.Linear(25,12)
