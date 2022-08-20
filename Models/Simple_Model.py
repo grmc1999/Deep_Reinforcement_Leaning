@@ -5,34 +5,23 @@ import numpy as np
 import torch.nn.functional as F
 
 class Neural_Net_Actor(nn.Module):
-    def __init__(self,state_size,action_size,gamma):
+    def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU(),gamma=0.99):
         super(Neural_Net_Actor,self).__init__()
         self.gamma=gamma
         self.state_size=state_size
         self.action_size=action_size
-        self.layer_1=nn.Linear(state_size,16)
-        self.layer_2=nn.Linear(16,50)
-        self.layer_3=nn.Linear(50,50)
-        self.layer_4=nn.Linear(50,25)
-        self.layer_5=nn.Linear(25,12)
-        self.layer_6=nn.Linear(12,12)
-        self.layer_7=nn.Linear(12,6)
-        self.layer_8=nn.Linear(6,action_size)
+        self.layer_sizes=[state_size]+layer_sizes+[action_size]
+        self.activators=(activators if isinstance(activators,list) else [activators for _ in self.layer_sizes[:-1]])
 
-        self.activator_1=nn.GELU()
-        self.activator_5=nn.Softmax(dim=-1  )
+        self.Modules=nn.ModuleList(
+            [nn.Sequential([nn.Linear(inp,out),act]) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
+        )
 
         self.losses={"loss":0}
     
     def forward(self,state):
-        state=self.activator_1(self.layer_1(state))
-        state=self.activator_1(self.layer_2(state))
-        state=self.activator_1(self.layer_3(state))
-        state=self.activator_1(self.layer_4(state))
-        state=self.activator_1(self.layer_5(state))
-        state=self.activator_1(self.layer_6(state))
-        state=self.activator_1(self.layer_7(state))
-        state=self.activator_5(self.layer_8(state))
+        for layer in self.Modules:
+            state=layer(state)
         return state
 
     def act(self,state):
