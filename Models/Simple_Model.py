@@ -46,18 +46,10 @@ class Neural_Net_Actor(nn.Module):
             Losess: Losses per episode
         """
         actions=self.forward(states) # [ steps_in_episode*episodes*batch_size, action_size ]
-        print("\n actions")
-        print(actions)
         logprobs=torch.log(actions)
-        print("\n log probs")
-        print(logprobs)
-        #selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
-        #losses=returns*selected_logprobs
-        losses=((returns.detach())*logprobs[np.arange(len(sampled_actions)),sampled_actions])
-        print("\ selected probs")
-        print(logprobs[np.arange(len(sampled_actions)),sampled_actions])
-        print("\n losses")
-        print(losses)
+        selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
+        losses=-returns*selected_logprobs
+        #losses=((returns.detach())*logprobs[np.arange(len(sampled_actions)),sampled_actions])
 
         return losses #
         
