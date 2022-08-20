@@ -14,7 +14,7 @@ class Neural_Net_Actor(nn.Module):
         self.activators=(activators if isinstance(activators,list) else [activators for _ in self.layer_sizes[:-1]])
 
         self.Modules=nn.ModuleList(
-            [nn.Sequential([nn.Linear(inp,out),act]) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
+            nn.Sequential([nn.Linear(inp,out),act]) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)
         )
 
         self.losses={"loss":0}
