@@ -3,7 +3,7 @@ Implementation for training deep learning models with Reinforcement Learning fra
 
 
 # TODO LIST:
-- [ X ] Vanilla REINFORCE algorithm [DEBUG]
+- [X] Vanilla REINFORCE algorithm
 - [ ] TD REINFORCE algorithm
 - [ ] TTD REINFORCE algorithm
 - [ ] Tree Backuo algorithm
