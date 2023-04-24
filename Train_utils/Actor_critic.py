@@ -87,6 +87,7 @@ class Episodic_learning(object):
                 s,s_p,reward,action,done=self.run_episode_step(s)
 
                 delta=self.model.compute_delta(reward,self.gamma,s,s_p,done)
+                print(delta.cpu().item())
 
                 Act_loss=self.model.Actor_loss(
                     cumulate_gama=Cum_gamma,
