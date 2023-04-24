@@ -34,7 +34,6 @@ class Episodic_learning(object):
         self.model=model
         self.gamma=model.gamma
         self.current_episode=0
-        self.current_batch=0
         self.device=("cuda" if cuda else "cpu")
         self.res_dir=res_dir
         if cuda:
@@ -107,9 +106,10 @@ class Episodic_learning(object):
                 Cri_loss.backward()
                 self.Cr_optim.step()
 
-                self.episodes_losses[self.current_batch-1]={
+                self.episodes_losses[self.current_episode]={step:{
                     "Actor_loss":Act_loss.detach().cpu().item(),
                     "Critic_loss":Cri_loss.detach().cpu().item()
+                }
                     }
                 Cum_gamma=Cum_gamma*self.gamma
 
