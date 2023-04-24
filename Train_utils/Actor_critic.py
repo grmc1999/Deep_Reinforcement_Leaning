@@ -47,7 +47,7 @@ class Episodic_learning(object):
         #Generate episode
         #for ep_step in tqdm(range(self.ep_limit+1)):
         self.episodes_states[self.current_episode].append(s)
-        s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
+        #s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
         if self.cuda:
             s=s.cuda()
         pa=self.model.act(s)
@@ -64,6 +64,7 @@ class Episodic_learning(object):
             self.episodes_action[self.current_episode+1]=[]
             self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
             s=self.env.reset()
+            s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
         
 
         return s,s_p,reward,a,done            
@@ -77,6 +78,7 @@ class Episodic_learning(object):
         
         for episode in tqdm(range(train_episodes)):
             s=self.env.reset()
+            s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
             Cum_gamma=1
             for step in tqdm(range(self.max_steps)):
                 self.Ac_optim.zero_grad()
