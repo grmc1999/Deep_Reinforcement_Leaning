@@ -70,10 +70,12 @@ class Episodic_learning(object):
     def Train(self,train_episodes):
         self.Ac_optim = torch.optim.Adam(self.model.Ac_Modules.parameters(), **(self.Ac_optimizer_params))
         self.Cr_optim = torch.optim.Adam(self.model.Cr_Modules.parameters(), **(self.Cr_optimizer_params))
+        
 
         #for batch in tqdm(range(train_batches)):
         
         for episode in tqdm(range(train_episodes)):
+            s=self.env.reset()
             Cum_gamma=1
             for step in tqdm(range(self.max_steps)):
                 self.Ac_optim.zero_grad()
