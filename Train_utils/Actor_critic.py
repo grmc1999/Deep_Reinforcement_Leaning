@@ -106,11 +106,11 @@ class Episodic_learning(object):
                 Cri_loss.backward()
                 self.Cr_optim.step()
 
-                self.episodes_losses[self.current_episode]={step:{
+                self.episodes_losses[self.current_episode].update({step:{
                     "Actor_loss":Act_loss.detach().cpu().item(),
                     "Critic_loss":Cri_loss.detach().cpu().item()
                 }
-                    }
+                    })
                 Cum_gamma=Cum_gamma*self.gamma
 
                 # TODO: if done episode
