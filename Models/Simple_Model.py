@@ -63,13 +63,15 @@ class Neural_Net_REINFORCE_Actor(nn.Module):
 
 class Neural_Net_Actor_Critic(nn.Module):
     #def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU(),gamma=0.99):
-    def __init__(self,Actor_model,Critic_model,gamma=0.99):
+    def __init__(self,Actor_model,Critic_model,gamma=0.99,norm=(lambda x:x**2)):
         super(Neural_Net_Actor_Critic,self).__init__()
         self.gamma=gamma
         self.losses={"Actor_loss":0,
                      "Critic_loss":0}
         self.Actor=Actor_model
         self.Critic=Critic_model
+
+        self.norm=(lambda x:x**2)
 
     def act(self,state):
         return self.Actor.forward(state)
@@ -91,9 +93,9 @@ class Neural_Net_Actor_Critic(nn.Module):
         losses=cumulate_gama*delta*selected_logprobs
         return -losses.sum()
     
-    def Critic_loss(self,delta,states,norm=(lambda x:x**2)):
+    def Critic_loss(self,delta,states):
 
-        delta=norm(delta)
+        delta=self.norm(delta)
         losses=delta*self.Critic.forward(states)
         return losses.sum()
         
