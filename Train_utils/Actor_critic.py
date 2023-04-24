@@ -22,7 +22,7 @@ class Episodic_learning(object):
         self.episodes_rewards[0]=[]
 
         self.episodes_returns={}
-        self.episodes_losses={0:"loss"} #{1: {"loss1":,"loss2":}}
+        self.episodes_losses={0:{}} #{1: {"loss1":,"loss2":}}
         self.ep_limit=max_steps
         self.free_input=free_input
         self.env=env
