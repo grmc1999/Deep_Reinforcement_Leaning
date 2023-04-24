@@ -78,18 +78,18 @@ class Neural_Net_Actor_Critic(nn.Module):
         return self.Critic.forward(state)
 
     def compute_delta(self,R,gamma,s,s_p,done): #Consider as a constant
-        if done:
-            return R-self.cri(s).detach()
-        else:
-            return R+gamma*self.cri(s_p).detach()-self.cri(s).detach()
+        #if done:
+        #    return R-self.cri(s).detach()
+        #else:
+        return R+gamma*self.cri(s_p).detach()-self.cri(s).detach()
 
     def Actor_loss(self,cumulate_gama,delta,states,sampled_actions):
 
         actions=self.Actor.forward(states)
         logprobs=torch.log(actions)
         selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
-        losses=-cumulate_gama*delta*selected_logprobs
-        return losses.sum()
+        losses=cumulate_gama*delta*selected_logprobs
+        return -losses.sum()
     
     def Critic_loss(self,delta,states,norm=(lambda x:x**2)):
 
