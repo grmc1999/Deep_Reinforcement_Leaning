@@ -69,7 +69,7 @@ class Neural_Net_Actor_Critic(nn.Module):
         return state
     
     def Critic_forward(self,state):
-        for layer in self.Actor_forward:
+        for layer in self.Cr_Modules:
             state=layer(state)
         return state
 
@@ -77,9 +77,7 @@ class Neural_Net_Actor_Critic(nn.Module):
         return self.Actor_forward(state)
     
     def cri(self,state):
-        for layer in self.Cr_Modules:
-            state=layer(state)
-        return state
+        return self.Critic_forward(state)
 
     def compute_delta(self,R,gamma,s,s_p,done): #Consider as a constant
         if done:
