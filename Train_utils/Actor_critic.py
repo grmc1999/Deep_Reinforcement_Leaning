@@ -82,7 +82,7 @@ class Episodic_learning(object):
             self.episodes_losses[self.current_episode]={0:{}}
             for step in tqdm(range(self.max_steps)):
                 self.Ac_optim.zero_grad()
-                self.Cr_optim.zero_grad()
+                #self.Cr_optim.zero_grad()
 
                 s,s_p,reward,action,done=self.run_episode_step(s)
 
