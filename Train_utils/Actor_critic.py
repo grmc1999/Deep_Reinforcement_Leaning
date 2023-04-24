@@ -65,8 +65,8 @@ class Episodic_learning(object):
         return s,s_p,reward,a,done            
 
     def Train(self,train_episodes):
-        self.Ac_optim = torch.optim.Adam(self.Ac_model.parameters(), **(self.Ac_optimizer_params))
-        self.Cr_optim = torch.optim.Adam(self.Cr_model.parameters(), **(self.Cr_optimizer_params))
+        self.Ac_optim = torch.optim.Adam(self.model.Ac_modules.parameters(), **(self.Ac_optimizer_params))
+        self.Cr_optim = torch.optim.Adam(self.model.Cr_modules.parameters(), **(self.Cr_optimizer_params))
 
         #for batch in tqdm(range(train_batches)):
         
