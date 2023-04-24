@@ -68,29 +68,8 @@ class Neural_Net_Actor_Critic(nn.Module):
         self.gamma=gamma
         self.losses={"Actor_loss":0,
                      "Critic_loss":0}
-        #self.state_size=state_size
-        #self.action_size=action_size
-        #self.layer_sizes=[state_size]+layer_sizes+[action_size]
-        #self.activators=(activators if isinstance(activators,list) else [activators for _ in self.layer_sizes[:-1]])
-#
-        #self.Ac_Modules=nn.ModuleList(
-        #    [nn.Sequential(nn.Linear(inp,out),act) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
-        #)
-        #self.Cr_Modules=nn.ModuleList(
-        #    [nn.Sequential(nn.Linear(inp,out),act) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
-        #)
         self.Actor=Actor_model
         self.Critic=Critic_model
-    
-    #def Actor_forward(self,state):
-    #    for layer in self.Ac_Modules:
-    #        state=layer(state)
-    #    return state
-    #
-    #def Critic_forward(self,state):
-    #    for layer in self.Cr_Modules:
-    #        state=layer(state)
-    #    return state
 
     def act(self,state):
         return self.Actor.forward(state)
@@ -110,18 +89,12 @@ class Neural_Net_Actor_Critic(nn.Module):
         logprobs=torch.log(actions)
         selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
         losses=-cumulate_gama*delta*selected_logprobs
-        print("Actor loss")
-        print(losses)
-        print(losses.sum())
         return losses.sum()
     
     def Critic_loss(self,delta,states,norm=(lambda x:x**2)):
 
         delta=norm(delta)
         losses=delta*self.Critic.forward(states)
-        print("Critic loss")
-        print(losses)
-        print(losses.sum())
         return losses.sum()
         
         
