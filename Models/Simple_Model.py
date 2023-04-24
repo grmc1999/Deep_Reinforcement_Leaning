@@ -7,6 +7,7 @@ import torch.nn.functional as F
 
 class Neural_Net_module(nn.Module):
     def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU()):
+        super(Neural_Net_module,self).__init__()
         self.state_size=state_size
         self.action_size=action_size
         self.layer_sizes=[state_size]+layer_sizes+[action_size]
