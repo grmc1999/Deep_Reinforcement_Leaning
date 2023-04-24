@@ -79,6 +79,7 @@ class Episodic_learning(object):
             s=self.env.reset()
             s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
             Cum_gamma=1
+            self.episodes_losses[self.current_episode]={0:{}}
             for step in tqdm(range(self.max_steps)):
                 self.Ac_optim.zero_grad()
                 self.Cr_optim.zero_grad()
@@ -120,7 +121,6 @@ class Episodic_learning(object):
 
 
             msg= ("\n").join(
-                #[k+" {l:.8f}".format(l=(np.mean(np.vectorize(lambda x,loss: x[loss] )(np.array(self.episodes_losses[self.current_batch-1][k]),k)))) for k in self.model.losses.keys()] \
                 [k+" {l:.8f}".format(l=(self.episodes_losses[self.current_episode-1][step][k])) for k in self.model.losses.keys()] \
                 + ["Rewards mean {rm:.8f} Rewards std {rstd:.8f} Rewards sum {rs:.8f}".format(
                                rm=np.mean(np.array(self.episodes_rewards[self.current_episode-1])),
