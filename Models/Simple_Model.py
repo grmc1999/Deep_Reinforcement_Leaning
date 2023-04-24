@@ -44,9 +44,9 @@ class Neural_Net_REINFORCE_Actor(nn.Module):
     
 
 
-class Neural_Net_REINFORCE_Actor_Critic(nn.Module):
+class Neural_Net_Actor_Critic(nn.Module):
     def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU(),gamma=0.99):
-        super(Neural_Net_REINFORCE_Actor_Critic,self).__init__()
+        super(Neural_Net_Actor_Critic,self).__init__()
         self.gamma=gamma
         self.state_size=state_size
         self.action_size=action_size

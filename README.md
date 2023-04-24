@@ -9,7 +9,7 @@ Implementation for training deep learning models with Reinforcement Learning fra
     - [ ] A2C
     - [ ] A3C
 - [ ] TTD REINFORCE algorithm
-    - [ ] Actor-critic [DEBUG]
+    - [ ] Actor-critic
     - [ ] A2C
     - [ ] A3C
 - [ ] Tree Backuo algorithm
