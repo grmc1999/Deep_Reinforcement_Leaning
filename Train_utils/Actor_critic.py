@@ -98,8 +98,7 @@ class Episodic_learning(object):
 
                 Cri_loss=self.model.Critic_loss(
                     delta=delta,
-                    states=s,
-                    norm=(lambda x:x**2)
+                    states=s
                 )
 
                 Act_loss.backward()
