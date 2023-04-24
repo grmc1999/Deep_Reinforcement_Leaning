@@ -77,7 +77,7 @@ class Neural_Net_Actor_Critic(nn.Module):
         return self.Actor_forward(state)
     
     def cri(self,state):
-        for layer in self.Actor_forward:
+        for layer in self.Cr_Modules:
             state=layer(state)
         return state
 
