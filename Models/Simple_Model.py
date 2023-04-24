@@ -4,6 +4,22 @@ from torch import nn
 import numpy as np
 import torch.nn.functional as F
 
+
+class Neural_Net_module(nn.Module):
+    def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU()):
+        self.state_size=state_size
+        self.action_size=action_size
+        self.layer_sizes=[state_size]+layer_sizes+[action_size]
+        self.activators=(activators if isinstance(activators,list) else [activators for _ in self.layer_sizes[:-1]])
+        
+        self.Modules=nn.ModuleList(
+            [nn.Sequential(nn.Linear(inp,out),act) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
+        )
+    def forward(self,state):
+        for layer in self.Modules:
+            state=layer(state)
+        return state
+
 class Neural_Net_REINFORCE_Actor(nn.Module):
     def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU(),gamma=0.99):
         super(Neural_Net_REINFORCE_Actor,self).__init__()
@@ -45,39 +61,41 @@ class Neural_Net_REINFORCE_Actor(nn.Module):
 
 
 class Neural_Net_Actor_Critic(nn.Module):
-    def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU(),gamma=0.99):
+    #def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU(),gamma=0.99):
+    def __init__(self,Actor_model,Critic_model,gamma=0.99):
         super(Neural_Net_Actor_Critic,self).__init__()
         self.gamma=gamma
-        self.state_size=state_size
-        self.action_size=action_size
-        self.layer_sizes=[state_size]+layer_sizes+[action_size]
-        self.activators=(activators if isinstance(activators,list) else [activators for _ in self.layer_sizes[:-1]])
-
-        self.Ac_Modules=nn.ModuleList(
-            [nn.Sequential(nn.Linear(inp,out),act) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
-        )
-        self.Cr_Modules=nn.ModuleList(
-            [nn.Sequential(nn.Linear(inp,out),act) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
-        )
-
         self.losses={"Actor_loss":0,
                      "Critic_loss":0}
+        #self.state_size=state_size
+        #self.action_size=action_size
+        #self.layer_sizes=[state_size]+layer_sizes+[action_size]
+        #self.activators=(activators if isinstance(activators,list) else [activators for _ in self.layer_sizes[:-1]])
+#
+        #self.Ac_Modules=nn.ModuleList(
+        #    [nn.Sequential(nn.Linear(inp,out),act) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
+        #)
+        #self.Cr_Modules=nn.ModuleList(
+        #    [nn.Sequential(nn.Linear(inp,out),act) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
+        #)
+        self.Actor=Actor_model
+        self.Critic=Critic_model
     
-    def Actor_forward(self,state):
-        for layer in self.Ac_Modules:
-            state=layer(state)
-        return state
-    
-    def Critic_forward(self,state):
-        for layer in self.Cr_Modules:
-            state=layer(state)
-        return state
+    #def Actor_forward(self,state):
+    #    for layer in self.Ac_Modules:
+    #        state=layer(state)
+    #    return state
+    #
+    #def Critic_forward(self,state):
+    #    for layer in self.Cr_Modules:
+    #        state=layer(state)
+    #    return state
 
     def act(self,state):
-        return self.Actor_forward(state)
+        return self.Actor.forward(state)
     
     def cri(self,state):
-        return self.Critic_forward(state)
+        return self.Critic.forward(state)
 
     def compute_delta(self,R,gamma,s,s_p,done): #Consider as a constant
         if done:
@@ -87,10 +105,11 @@ class Neural_Net_Actor_Critic(nn.Module):
 
     def Actor_loss(self,cumulate_gama,delta,states,sampled_actions):
 
-        actions=self.Actor_forward(states)
+        actions=self.Actor.forward(states)
         logprobs=torch.log(actions)
         selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
         losses=-cumulate_gama*delta*selected_logprobs
+        print("Actor loss")
         print(losses)
         print(losses.sum())
         return losses.sum()
@@ -98,7 +117,8 @@ class Neural_Net_Actor_Critic(nn.Module):
     def Critic_loss(self,delta,states,norm=(lambda x:x**2)):
 
         delta=norm(delta)
-        losses=delta*self.Critic_forward(states)
+        losses=delta*self.Critic.forward(states)
+        print("Critic loss")
         print(losses)
         print(losses.sum())
         return losses.sum()
