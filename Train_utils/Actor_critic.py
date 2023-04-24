@@ -91,7 +91,7 @@ class Episodic_learning(object):
 
                 Act_loss=self.model.Actor_loss(
                     cumulate_gama=Cum_gamma,
-                    delta=delta,
+                    delta=delta.detach(),
                     states=s,
                     sampled_actions=action
                 )

@@ -83,7 +83,7 @@ class Neural_Net_Actor_Critic(nn.Module):
         #if done:
         #    return R-self.cri(s).detach()
         #else:
-        return R+gamma*self.cri(s_p).detach()-self.cri(s).detach()
+        return R+gamma*self.cri(s_p).detach()-self.cri(s)
 
     def Actor_loss(self,cumulate_gama,delta,states,sampled_actions):
 
@@ -96,7 +96,8 @@ class Neural_Net_Actor_Critic(nn.Module):
     def Critic_loss(self,delta,states):
 
         delta=self.norm(delta)
-        losses=delta*self.Critic.forward(states)
+        #losses=delta*self.Critic.forward(states)
+        losses=delta
         return losses.sum()
         
         
