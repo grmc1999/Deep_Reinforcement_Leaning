@@ -55,6 +55,7 @@ class Episodic_learning(object):
         a=sampler.sample().detach()
         
         s_p, reward, done, _=self.env.step(a.item())
+        s_p=torch.from_numpy(s_p).float().unsqueeze(0)
         self.episodes_action[self.current_episode].append(a.item())
         self.episodes_rewards[self.current_episode].append(reward)
         
