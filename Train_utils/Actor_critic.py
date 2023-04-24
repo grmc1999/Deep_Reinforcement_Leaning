@@ -10,7 +10,7 @@ from torch.distributions import Categorical
 # View Returns calculation as a weigthing of losses, the return computation is implemented per training framework
 
 class Episodic_learning(object):
-    def __init__(self,model,ep_limit,free_input,env,optimizer_params,res_dir,max_steps=200,cuda=False):
+    def __init__(self,model,free_input,env,optimizer_params,res_dir,max_steps=200,cuda=False):
         
         self.max_steps=max_steps
         self.episodes_states={}
@@ -23,7 +23,7 @@ class Episodic_learning(object):
 
         self.episodes_returns={}
         self.episodes_losses={0:"loss"} #{1: {"loss1":,"loss2":}}
-        self.ep_limit=ep_limit
+        self.ep_limit=max_steps
         self.free_input=free_input
         self.env=env
         self.optimizer_params=optimizer_params
