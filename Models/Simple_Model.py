@@ -91,13 +91,17 @@ class Neural_Net_Actor_Critic(nn.Module):
         logprobs=torch.log(actions)
         selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
         losses=-cumulate_gama*delta*selected_logprobs
-        return losses
+        print(losses)
+        print(losses.sum())
+        return losses.sum()
     
     def Critic_loss(self,delta,states,norm=(lambda x:x**2)):
 
         delta=norm(delta)
         losses=delta*self.Critic_forward(states)
-        return losses
+        print(losses)
+        print(losses.sum())
+        return losses.sum()
         
         
 
