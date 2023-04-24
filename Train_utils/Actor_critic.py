@@ -103,7 +103,7 @@ class Episodic_learning(object):
                 self.Ac_optim.step()
 
                 Cri_loss.backward()
-                self.Cri_loss.step()
+                self.Cr_optim.step()
 
                 self.episodes_losses[self.current_batch-1]={
                     "Actor_loss":Act_loss.detach().cpu().item(),
