@@ -101,11 +101,14 @@ class Episodic_learning(object):
                     states=s
                 )
 
-                Act_loss.backward()
+                Total_loss=Cri_loss+Act_loss
+                Total_loss.backward()
                 self.Ac_optim.step()
+                #Act_loss.backward()
+                #self.Ac_optim.step()
 
-                Cri_loss.backward()
-                self.Cr_optim.step()
+                #Cri_loss.backward()
+                #self.Cr_optim.step()
 
                 self.episodes_losses[self.current_episode].update({step:{
                     "Actor_loss":Act_loss.detach().cpu().item(),
