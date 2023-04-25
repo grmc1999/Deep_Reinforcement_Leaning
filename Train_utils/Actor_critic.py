@@ -70,9 +70,9 @@ class Episodic_learning(object):
         return s,s_p,reward,a,done            
 
     def Train(self,train_episodes):
-        #self.Ac_optim = torch.optim.Adam(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params))
-        #self.Cr_optim = torch.optim.Adam(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params))
-        self.Ac_optim = torch.optim.Adam(list(self.model.Actor.Modules.parameters()) + list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params))
+        self.Ac_optim = torch.optim.Adam(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params))
+        self.Cr_optim = torch.optim.Adam(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params))
+        #self.Ac_optim = torch.optim.Adam(list(self.model.Actor.Modules.parameters()) + list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params))
 
         #for batch in tqdm(range(train_batches)):
         
@@ -83,7 +83,7 @@ class Episodic_learning(object):
             self.episodes_losses[self.current_episode]={0:{}}
             for step in tqdm(range(self.max_steps)):
                 self.Ac_optim.zero_grad()
-                #self.Cr_optim.zero_grad()
+                self.Cr_optim.zero_grad()
 
                 s,s_p,reward,action,done=self.run_episode_step(s)
 
@@ -102,14 +102,15 @@ class Episodic_learning(object):
                     states=s
                 )
 
-                Total_loss=self.phi*Cri_loss+(self.phi-1)*Act_loss
-                Total_loss.backward()
-                self.Ac_optim.step()
-                #Act_loss.backward()
+                #Total_loss=self.phi*Cri_loss+(self.phi-1)*Act_loss
+                #Total_loss.backward()
                 #self.Ac_optim.step()
 
-                #Cri_loss.backward()
-                #self.Cr_optim.step()
+                Act_loss.backward()
+                self.Ac_optim.step()
+
+                Cri_loss.backward()
+                self.Cr_optim.step()
 
                 self.episodes_losses[self.current_episode].update({step:{
                     "Actor_loss":Act_loss.detach().cpu().item(),
