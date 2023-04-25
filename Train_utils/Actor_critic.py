@@ -10,7 +10,7 @@ from torch.distributions import Categorical
 # View Returns calculation as a weigthing of losses, the return computation is implemented per training framework
 
 class Episodic_learning(object):
-    def __init__(self,model,free_input,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,max_steps=200,cuda=False):
+    def __init__(self,model,free_input,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,multi_opt=True,max_steps=200,cuda=False):
         
         self.max_steps=max_steps
         self.episodes_states={}
@@ -27,6 +27,7 @@ class Episodic_learning(object):
         self.free_input=free_input
         self.env=env
 
+        self.multi_opt=multi_opt
         self.Ac_optimizer_params=Actor_optimizer_params
         self.Cr_optimizer_params=Critic_optimizer_params
 
@@ -82,8 +83,7 @@ class Episodic_learning(object):
             Cum_gamma=1
             self.episodes_losses[self.current_episode]={0:{}}
             for step in tqdm(range(self.max_steps)):
-                self.Ac_optim.zero_grad()
-                self.Cr_optim.zero_grad()
+                
 
                 s,s_p,reward,action,done=self.run_episode_step(s)
 
@@ -102,15 +102,22 @@ class Episodic_learning(object):
                     states=s
                 )
 
-                #Total_loss=self.phi*Cri_loss+(self.phi-1)*Act_loss
-                #Total_loss.backward()
-                #self.Ac_optim.step()
+                
+                
 
-                Act_loss.backward()
-                self.Ac_optim.step()
+                if self.multi_opt:
+                    self.Ac_optim.zero_grad()
+                    self.Cr_optim.zero_grad()
+                    Act_loss.backward()
+                    self.Ac_optim.step()
 
-                Cri_loss.backward()
-                self.Cr_optim.step()
+                    Cri_loss.backward()
+                    self.Cr_optim.step()
+                else:
+                    self.Ac_optim.zero_grad()
+                    Total_loss=self.phi*Cri_loss+(self.phi-1)*Act_loss
+                    Total_loss.backward()
+                    self.Ac_optim.step()
 
                 self.episodes_losses[self.current_episode].update({step:{
                     "Actor_loss":Act_loss.detach().cpu().item(),
