@@ -81,7 +81,7 @@ class Neural_Net_Actor_Critic(nn.Module):
 
     def compute_delta(self,R,gamma,s,s_p,done): #Consider as a constant
         if done:
-            return R-self.cri(s).detach()
+            return R-self.cri(s)
         else:
             return R+gamma*self.cri(s_p).detach()-self.cri(s)
 
