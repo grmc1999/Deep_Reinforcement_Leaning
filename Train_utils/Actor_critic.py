@@ -115,7 +115,7 @@ class Episodic_learning(object):
                     self.Cr_optim.step()
                 else:
                     self.Ac_optim.zero_grad()
-                    Total_loss=self.phi*Cri_loss+(self.phi-1)*Act_loss
+                    Total_loss=self.phi*Cri_loss+(1-self.phi)*Act_loss
                     Total_loss.backward()
                     self.Ac_optim.step()
 
