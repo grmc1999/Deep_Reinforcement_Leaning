@@ -85,7 +85,7 @@ class Episodic_learning(object):
             #MODIFY self.phi DINAMICALLY
             #self.phi=np.cos()
             if not static:
-                self.phi=self.sch_f((T%episode)/T)
+                self.phi=self.sch_f((episode%T)/T)
             else:
                 self.phi=phi
             for step in tqdm(range(self.max_steps)):
