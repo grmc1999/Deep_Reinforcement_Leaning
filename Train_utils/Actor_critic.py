@@ -8,10 +8,12 @@ from torch.distributions import Categorical
 
 
 # View Returns calculation as a weigthing of losses, the return computation is implemented per training framework
-
+#lambda x:(1-2e-8)*np.cos(2*np.pi*x)+(0.5+1e-8)
 class Episodic_learning(object):
-    def __init__(self,model,free_input,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,multi_opt=True,max_steps=200,cuda=False):
+    def __init__(self,model,free_input,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,multi_opt=True,max_steps=200,cuda=False,sch_f=lambda x:(1-2e-8)*np.cos(2*np.pi*x)+(0.5+1e-8)):
         
+        self.sch_f=sch_f
+
         self.max_steps=max_steps
         self.episodes_states={}
         self.episodes_action={}
@@ -70,25 +72,28 @@ class Episodic_learning(object):
 
         return s,s_p,reward,a,done            
 
-    def Train(self,train_episodes):
+    def Train(self,train_episodes,T,phi,static=True):
         self.Ac_optim = torch.optim.Adam(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params))
         self.Cr_optim = torch.optim.Adam(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params))
-        #self.Ac_optim = torch.optim.Adam(list(self.model.Actor.Modules.parameters()) + list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params))
-
-        #for batch in tqdm(range(train_batches)):
         
         for episode in tqdm(range(train_episodes)):
             s=self.env.reset()[0]
             s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
             Cum_gamma=1
             self.episodes_losses[self.current_episode]={0:{}}
+
+            #MODIFY self.phi DINAMICALLY
+            #self.phi=np.cos()
+            if not static:
+                self.phi=self.sch_f((T%episode)/T)
+            else:
+                self.phi=phi
             for step in tqdm(range(self.max_steps)):
                 
 
                 s,s_p,reward,action,done=self.run_episode_step(s)
 
                 delta=self.model.compute_delta(reward,self.gamma,s,s_p,done)
-                #print(delta.cpu().item())
 
                 Act_loss=self.model.Actor_loss(
                     cumulate_gama=Cum_gamma,
@@ -144,10 +149,10 @@ class Episodic_learning(object):
           )
           #save history
 
-            np.save(os.path.join(self.res_dir,'STATES.npy'), self.episodes_states)
-            np.save(os.path.join(self.res_dir,'ACTIONS.npy'), self.episodes_action)
-            np.save(os.path.join(self.res_dir,'REWARDS.npy'), self.episodes_rewards)
-            np.save(os.path.join(self.res_dir,'LOSSES.npy'), self.episodes_losses) 
+        np.save(os.path.join(self.res_dir,'STATES.npy'), self.episodes_states)
+        np.save(os.path.join(self.res_dir,'ACTIONS.npy'), self.episodes_action)
+        np.save(os.path.join(self.res_dir,'REWARDS.npy'), self.episodes_rewards)
+        np.save(os.path.join(self.res_dir,'LOSSES.npy'), self.episodes_losses) 
 
 
           
