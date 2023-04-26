@@ -3,7 +3,7 @@ from tqdm import tqdm
 import torch
 import os
 import numpy as np
-from einops import repeat
+#from einops import repeat
 from torch.distributions import Categorical
 
 
@@ -64,7 +64,7 @@ class Episodic_learning(object):
             self.episodes_states[self.current_episode+1]=[]
             self.episodes_action[self.current_episode+1]=[]
             self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
-            s=self.env.reset()
+            s=self.env.reset()[0]
             s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
         
 
@@ -78,7 +78,7 @@ class Episodic_learning(object):
         #for batch in tqdm(range(train_batches)):
         
         for episode in tqdm(range(train_episodes)):
-            s=self.env.reset()
+            s=self.env.reset()[0]
             s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
             Cum_gamma=1
             self.episodes_losses[self.current_episode]={0:{}}
