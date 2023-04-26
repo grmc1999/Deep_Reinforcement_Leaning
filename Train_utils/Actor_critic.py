@@ -73,8 +73,11 @@ class Episodic_learning(object):
         return s,s_p,reward,a,done            
 
     def Train(self,train_episodes,T,phi,static=True):
-        self.Ac_optim = torch.optim.Adam(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params))
-        self.Cr_optim = torch.optim.Adam(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params))
+        if self.multi_opt:
+            self.Ac_optim = torch.optim.Adam(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params))
+            self.Cr_optim = torch.optim.Adam(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params))
+        else:
+            self.Ac_optim = torch.optim.Adam(list(self.model.Actor.Modules.parameters())+list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params))
         
         for episode in tqdm(range(train_episodes)):
             s=self.env.reset()[0]
