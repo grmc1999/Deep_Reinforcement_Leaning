@@ -72,7 +72,7 @@ class Episodic_learning(object):
 
         return s,s_p,reward,a,done            
 
-    def Train(self,train_episodes,T,phi,static=True):
+    def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
         if self.multi_opt:
             self.Ac_optim = torch.optim.Adam(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params))
             self.Cr_optim = torch.optim.Adam(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params))
@@ -95,6 +95,9 @@ class Episodic_learning(object):
                 
 
                 s,s_p,reward,action,done=self.run_episode_step(s)
+
+                if modified_reward:
+                    reward=reward*step
 
                 delta=self.model.compute_delta(reward,self.gamma,s,s_p,done)
 
