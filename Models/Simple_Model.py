@@ -6,15 +6,16 @@ import torch.nn.functional as F
 
 
 class Neural_Net_module(nn.Module):
-    def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU()):
+    def __init__(self,state_size,action_size,layer_sizes=[],activators=nn.ReLU(),dropouts=1):
         super(Neural_Net_module,self).__init__()
         self.state_size=state_size
         self.action_size=action_size
         self.layer_sizes=[state_size]+layer_sizes+[action_size]
         self.activators=(activators if isinstance(activators,list) else [activators for _ in self.layer_sizes[:-1]])
+        self.dropouts=(dropouts if isinstance(dropouts,list) else [dropouts for _ in self.layer_sizes[:-1]])
         
         self.Modules=nn.ModuleList(
-            [nn.Sequential(nn.Linear(inp,out),act) for inp,out,act in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators)]
+            [nn.Sequential(nn.Linear(inp,out),act,nn.Dropout(dpo)) for inp,out,act,dpo in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators,self.dropouts)]
         )
     def forward(self,state):
         for layer in self.Modules:
