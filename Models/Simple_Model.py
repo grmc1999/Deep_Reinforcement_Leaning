@@ -15,7 +15,7 @@ class Neural_Net_module(nn.Module):
         self.dropouts=(dropouts if isinstance(dropouts,list) else [dropouts for _ in self.layer_sizes[:-1]])
         
         self.Modules=nn.ModuleList(
-            [nn.Sequential(nn.Linear(inp,out),act,nn.Dropout(dpo)) for inp,out,act,dpo in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators,self.dropouts)]
+            [nn.Sequential(nn.Linear(inp,out),act,nn.Dropout(dpo) if dpo!=None else nn.Identity()) for inp,out,act,dpo in zip(self.layer_sizes[:-1],self.layer_sizes[1:],self.activators,self.dropouts)]
         )
     def forward(self,state):
         for layer in self.Modules:
