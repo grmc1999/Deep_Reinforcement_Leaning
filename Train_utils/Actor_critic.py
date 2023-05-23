@@ -138,6 +138,7 @@ class Episodic_learning(object):
                 }
                     })
                 Cum_gamma=Cum_gamma*self.gamma
+                s=s_p
 
                 # TODO: if done episode
                 if done:
