@@ -99,6 +99,7 @@ class Episodic_learning(object):
 
                 if modified_reward:
                     reward=reward*step
+                    print(reward)
 
                 delta=self.model.compute_delta(reward,self.gamma,s,s_p,done)
 
