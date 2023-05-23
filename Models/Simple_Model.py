@@ -72,7 +72,7 @@ class Neural_Net_Actor_Critic(nn.Module):
         self.Actor=Actor_model
         self.Critic=Critic_model
 
-        self.norm=(lambda x:x**2)
+        self.norm=norm
 
     def act(self,state):
         return self.Actor.forward(state)
