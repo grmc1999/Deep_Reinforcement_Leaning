@@ -63,6 +63,7 @@ class Episodic_learning(object):
         self.episodes_rewards[self.current_episode].append(reward)
         
         if done:
+            print("DONE")
             self.episodes_states[self.current_episode+1]=[]
             self.episodes_action[self.current_episode+1]=[]
             self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
@@ -139,6 +140,7 @@ class Episodic_learning(object):
 
                 # TODO: if done episode
                 if done:
+                    print("DONE")
                     self.current_episode=self.current_episode+1
                     break
 
