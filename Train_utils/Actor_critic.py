@@ -75,10 +75,10 @@ class Episodic_learning(object):
 
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
         if self.multi_opt:
-            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"]).SGD(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params["args"]))
-            self.Cr_optim = getattr(torch.optim,self.Cr_optimizer_params["name"]).SGD(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params["args"]))
+            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"])(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params["args"]))
+            self.Cr_optim = getattr(torch.optim,self.Cr_optimizer_params["name"])(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params["args"]))
         else:
-            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"]).Adam(list(self.model.Actor.Modules.parameters())+list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params["args"]))
+            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"])(list(self.model.Actor.Modules.parameters())+list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params["args"]))
         
         for episode in tqdm(range(train_episodes)):
             s=self.env.reset()[0]
