@@ -10,7 +10,7 @@ from torch.distributions import Categorical
 # View Returns calculation as a weigthing of losses, the return computation is implemented per training framework
 #lambda x:(1-2e-8)*np.cos(2*np.pi*x)+(0.5+1e-8)
 class Episodic_learning(object):
-    def __init__(self,model,free_input,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,multi_opt=True,max_steps=200,cuda=False,sch_f=lambda x:(1-2e-8)*np.cos(2*np.pi*x)+(0.5+1e-8)):
+    def __init__(self,model,free_input,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,multi_opt=True,max_steps=200,cuda=False,sch_f=lambda x:x):
         
         self.sch_f=sch_f
 
@@ -75,10 +75,10 @@ class Episodic_learning(object):
 
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
         if self.multi_opt:
-            self.Ac_optim = torch.optim.SGD(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params))
-            self.Cr_optim = torch.optim.SGD(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params))
+            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"]).SGD(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params["args"]))
+            self.Cr_optim = getattr(torch.optim,self.Cr_optimizer_params["name"]).SGD(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params["args"]))
         else:
-            self.Ac_optim = torch.optim.Adam(list(self.model.Actor.Modules.parameters())+list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params))
+            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"]).Adam(list(self.model.Actor.Modules.parameters())+list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params["args"]))
         
         for episode in tqdm(range(train_episodes)):
             s=self.env.reset()[0]
@@ -99,7 +99,9 @@ class Episodic_learning(object):
 
                 if modified_reward:
                     reward=reward*step
-                    print(reward)
+
+                if step==(self.max_steps-1):
+                    done=True
 
                 delta=self.model.compute_delta(reward,self.gamma,s,s_p,done)
 
