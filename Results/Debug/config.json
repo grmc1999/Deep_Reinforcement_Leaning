@@ -51,7 +51,6 @@
         },
         "Critic_optimizer_params":{"lr":1e-7},
         "phi":1e-1,
-        "res_dir":"/content/Deep_Reinforcement_Learning/Results/Debug",
         "max_steps":200,
         "multi_opt":false,
         "cuda":false}
