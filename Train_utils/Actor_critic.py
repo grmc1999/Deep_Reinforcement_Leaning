@@ -141,7 +141,7 @@ class Episodic_learning(object):
                 s=s_p
 
                 # TODO: if done episode
-                if done or step==self.max_steps:
+                if done or step==(self.max_steps-1):
                     print("DONE")
                     self.episodes_states[self.current_episode+1]=[]
                     self.episodes_action[self.current_episode+1]=[]
