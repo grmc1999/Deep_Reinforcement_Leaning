@@ -64,9 +64,9 @@ class Episodic_learning(object):
         
         if done:
             print("DONE")
-            self.episodes_states[self.current_episode+1]=[]
-            self.episodes_action[self.current_episode+1]=[]
-            self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
+            #self.episodes_states[self.current_episode+1]=[]
+            #self.episodes_action[self.current_episode+1]=[]
+            #self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
             #s=self.env.reset()[0]
             #s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
         
@@ -141,8 +141,11 @@ class Episodic_learning(object):
                 s=s_p
 
                 # TODO: if done episode
-                if done:
+                if done or step==self.max_steps:
                     print("DONE")
+                    self.episodes_states[self.current_episode+1]=[]
+                    self.episodes_action[self.current_episode+1]=[]
+                    self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
                     self.current_episode=self.current_episode+1
                     break
 
