@@ -43,6 +43,12 @@ class Episodic_learning(object):
         if cuda:
             self.model.cuda()
 
+        if self.multi_opt:
+            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"])(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params["args"]))
+            self.Cr_optim = getattr(torch.optim,self.Cr_optimizer_params["name"])(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params["args"]))
+        else:
+            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"])(list(self.model.Actor.Modules.parameters())+list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params["args"]))
+
     def run_episode_step(self,s):
         u=self.free_input
         
@@ -74,11 +80,7 @@ class Episodic_learning(object):
         return s,s_p,reward,a,done            
 
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
-        if self.multi_opt:
-            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"])(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params["args"]))
-            self.Cr_optim = getattr(torch.optim,self.Cr_optimizer_params["name"])(self.model.Critic.Modules.parameters(), **(self.Cr_optimizer_params["args"]))
-        else:
-            self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"])(list(self.model.Actor.Modules.parameters())+list(self.model.Critic.Modules.parameters()), **(self.Ac_optimizer_params["args"]))
+
         
         for episode in tqdm(range(train_episodes)):
             s=self.env.reset()[0]
