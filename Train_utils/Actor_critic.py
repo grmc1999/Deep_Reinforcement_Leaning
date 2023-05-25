@@ -41,7 +41,7 @@ class Episodic_learning(object):
         self.device=("cuda" if cuda else "cpu")
         self.res_dir=res_dir
         if cuda:
-            self.model.cuda()
+            self.model.cuda() 
 
         if self.multi_opt:
             self.Ac_optim = getattr(torch.optim,self.Ac_optimizer_params["name"])(self.model.Actor.Modules.parameters(), **(self.Ac_optimizer_params["args"]))
