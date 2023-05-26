@@ -86,11 +86,11 @@ class Neural_Net_Actor_Critic(nn.Module):
         else:
             return R+gamma*self.cri(s_p).detach()-self.cri(s)
 
-    def Actor_loss(self,cumulate_gama,delta,states,sampled_actions):
+    def Actor_loss(self,cumulate_gama,delta,states,prob_actions,sampled_actions):
 
-        actions=self.Actor.forward(states)
-        logprobs=torch.log(actions)
-        selected_logprobs=logprobs[np.arange(actions.shape[0]),sampled_actions]
+        #prob_actions=self.Actor.forward(states)
+        logprobs=torch.log(prob_actions)
+        selected_logprobs=logprobs[np.arange(prob_actions.shape[0]),sampled_actions]
         losses=cumulate_gama*delta*selected_logprobs
         return -losses.sum()
     

@@ -77,7 +77,7 @@ class Episodic_learning(object):
             #s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
         
 
-        return s,s_p,reward,a,done            
+        return s,s_p,reward,pa,a,done            
 
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
 
@@ -97,7 +97,7 @@ class Episodic_learning(object):
             for step in tqdm(range(self.max_steps)):
                 
 
-                s,s_p,reward,action,done=self.run_episode_step(s)
+                s,s_p,reward,p_actions,action,done=self.run_episode_step(s)
 
                 if modified_reward:
                     reward=reward*step
@@ -111,6 +111,7 @@ class Episodic_learning(object):
                     cumulate_gama=Cum_gamma,
                     delta=delta.detach(),
                     states=s,
+                    prob_actions=p_actions,
                     sampled_actions=action
                 )
 
