@@ -21,7 +21,7 @@
         "name":"Neural_Net_module",
         "args":{"state_size":4,
         "action_size":2,
-        "layer_sizes":[512,128,64,32,16,16,4,2],
+        "layer_sizes":[512,128,64,32,16,16,4,1],
         "activators":[
             {"name":"GELU","args":{}},
             {"name":"GELU","args":{}},

@@ -3,16 +3,11 @@
         "name":"Neural_Net_module",
         "args":{"state_size":4,
             "action_size":2,
-            "layer_sizes":[512,128,64,32,16,16,4,2],
+            "layer_sizes":[32,32,2],
             "activators":[
-                {"name":"GELU","args":{}},
-                {"name":"GELU","args":{}},
-                {"name":"GELU","args":{}},
-                {"name":"GELU","args":{}},
-                {"name":"GELU","args":{}},
-                {"name":"GELU","args":{}},
-                {"name":"GELU","args":{}},
-                {"name":"GELU","args":{}},
+                {"name":"ReLU","args":{}},
+                {"name":"ReLU","args":{}},
+                {"name":"ReLU","args":{}},
                 {"name":"Softmax","args":{"dim":-1}}
             ],
             "dropouts":null}
@@ -21,16 +16,17 @@
         "name":"Neural_Net_module",
         "args":{"state_size":4,
         "action_size":2,
-        "layer_sizes":[512,128,64,32,16,16,4,1],
+        "layer_sizes":[32,32,32,32,32,32,32,32,1],
         "activators":[
-            {"name":"GELU","args":{}},
-            {"name":"GELU","args":{}},
-            {"name":"GELU","args":{}},
-            {"name":"GELU","args":{}},
-            {"name":"GELU","args":{}},
-            {"name":"GELU","args":{}},
-            {"name":"GELU","args":{}},
-            {"name":"GELU","args":{}},
+            {"name":"ReLU","args":{}},
+            {"name":"ReLU","args":{}},
+            {"name":"ReLU","args":{}},
+            {"name":"ReLU","args":{}},
+            {"name":"ReLU","args":{}},
+            {"name":"ReLU","args":{}},
+            {"name":"ReLU","args":{}},
+            {"name":"ReLU","args":{}},
+            {"name":"ReLU","args":{}},
             {"name":"Identity","args":{}}
         ],
         "dropouts":null}
@@ -47,7 +43,7 @@
         "args":{"free_input":0,
         "Actor_optimizer_params":{
             "name":"SGD",
-            "args":{"lr":1e-4}
+            "args":{"lr":1e-3}
         },
         "Critic_optimizer_params":{"lr":1e-7},
         "phi":0.5,
