@@ -3,11 +3,10 @@
         "name":"Neural_Net_module",
         "args":{"state_size":4,
             "action_size":2,
-            "layer_sizes":[32,32,2],
+            "layer_sizes":[32,32],
             "activators":[
-                {"name":"ReLU","args":{}},
-                {"name":"ReLU","args":{}},
-                {"name":"ReLU","args":{}},
+                {"name":"LeakyReLU","args":{}},
+                {"name":"LeakyReLU","args":{}},
                 {"name":"Softmax","args":{"dim":-1}}
             ],
             "dropouts":null}
@@ -15,15 +14,12 @@
     "Critic_model_name":{
         "name":"Neural_Net_module",
         "args":{"state_size":4,
-        "action_size":2,
-        "layer_sizes":[32,32,32,32,1],
+        "action_size":1,
+        "layer_sizes":[256,256],
         "activators":[
-            {"name":"ReLU","args":{}},
-            {"name":"ReLU","args":{}},
-            {"name":"ReLU","args":{}},
-            {"name":"ReLU","args":{}},
-            {"name":"ReLU","args":{}},
-            {"name":"Identity","args":{}}
+            {"name":"LeakyReLU","args":{}},
+            {"name":"LeakyReLU","args":{}},
+            {"name":"ReLU","args":{}}
         ],
         "dropouts":null}
     },
