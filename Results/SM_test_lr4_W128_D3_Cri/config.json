@@ -36,7 +36,7 @@
         "args":{"free_input":0,
         "Actor_optimizer_params":{
             "name":"SGD",
-            "args":{"lr":1e-34}
+            "args":{"lr":1e-4}
         },
         "Critic_optimizer_params":{"lr":1e-7},
         "phi":0.5,
