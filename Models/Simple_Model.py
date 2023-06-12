@@ -100,6 +100,15 @@ class Neural_Net_Actor_Critic(nn.Module):
         #losses=delta*self.Critic.forward(states)
         losses=delta
         return losses.sum()
+
+class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
+    def __init__(self,Actor_model,Critic_model,gamma=0.99,norm=(lambda x:x**2)):
+        super(Neural_Net_Actor_Critic,self).__init__()
+    
+    #TODO: redefine compute delta
+    def compute_delta(self,R,gamma,s,s_p,done):
+
+    #TODO: Decide 
         
         
 

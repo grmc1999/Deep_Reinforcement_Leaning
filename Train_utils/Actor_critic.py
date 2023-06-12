@@ -67,15 +67,6 @@ class Episodic_learning(object):
         s_p=torch.from_numpy(s_p).float().unsqueeze(0)
         self.episodes_action[self.current_episode].append(a.item())
         self.episodes_rewards[self.current_episode].append(reward)
-        
-        if done:
-            print("DONE")
-            #self.episodes_states[self.current_episode+1]=[]
-            #self.episodes_action[self.current_episode+1]=[]
-            #self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
-            #s=self.env.reset()[0]
-            #s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
-        
 
         return s,s_p,reward,pa,a,done            
 
@@ -119,9 +110,6 @@ class Episodic_learning(object):
                     delta=delta,
                     states=s
                 )
-
-                
-                
 
                 if self.multi_opt:
                     self.Ac_optim.zero_grad()
@@ -176,4 +164,134 @@ class Episodic_learning(object):
           
         
 
+class n_step_learning(Episodic_learning):
+    def __init__(self,model,free_input,n_steps,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,multi_opt=True,max_steps=200,cuda=False,sch_f=lambda x:x):
+        super().__init__(model,free_input,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,multi_opt,max_steps,cuda,sch_f)
+
+        self.n_steps=n_steps
     
+    def run_episode_n_steps(self,s,n):
+        # Run N steps and use error over V_t
+        S=[]
+        R=[]
+        pA=[]
+        A=[]
+
+        for i in range(n):
+            self.episodes_states[self.current_episode].append(s)
+            #save S
+            S.append(s)
+            if self.cuda:
+                s=s.cuda()
+            pa=self.model.act(s)
+            sampler=Categorical(pa)
+            a=sampler.sample().detach()
+
+            s_p, reward, done, _,_=self.env.step(a.item())
+            s_p=torch.from_numpy(s_p).float().unsqueeze(0)
+
+            self.episodes_action[self.current_episode].append(a.item())
+            self.episodes_rewards[self.current_episode].append(reward)
+
+            #s=s_p.detach()
+            #sabe
+            R.append(reward)
+            pA.append(pa)
+            A.append(a)
+            if done:
+                break
+            #R
+            #pA
+            #A
+
+        return S,R,pA,A,done
+    
+    def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
+
+        
+        for episode in tqdm(range(train_episodes)):
+            s=self.env.reset()[0]
+            s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
+            Cum_gamma=1
+            self.episodes_losses[self.current_episode]={0:{}}
+
+            #MODIFY self.phi DINAMICALLY
+            #self.phi=np.cos()
+            if not static:
+                self.phi=self.sch_f((episode%T)/T)
+            else:
+                self.phi=phi
+            for step in tqdm(range(self.max_steps)):
+                
+
+                s,s_p,reward,p_actions,action,done=self.run_episode_step(s)
+
+                if modified_reward:
+                    reward=reward*step
+
+                if step==(self.max_steps-1):
+                    done=True
+
+                delta=self.model.compute_delta(reward,self.gamma,s,s_p,done)
+
+                Act_loss=self.model.Actor_loss(
+                    cumulate_gama=Cum_gamma,
+                    delta=delta.detach(),
+                    states=s,
+                    prob_actions=p_actions,
+                    sampled_actions=action
+                )
+
+                Cri_loss=self.model.Critic_loss(
+                    delta=delta,
+                    states=s
+                )
+
+                if self.multi_opt:
+                    self.Ac_optim.zero_grad()
+                    self.Cr_optim.zero_grad()
+                    Act_loss.backward()
+                    self.Ac_optim.step()
+
+                    Cri_loss.backward()
+                    self.Cr_optim.step()
+                else:
+                    self.Ac_optim.zero_grad()
+                    Total_loss=self.phi*Cri_loss+(1-self.phi)*Act_loss
+                    Total_loss.backward()
+                    self.Ac_optim.step()
+
+                self.episodes_losses[self.current_episode].update({step:{
+                    "Actor_loss":Act_loss.detach().cpu().item(),
+                    "Critic_loss":Cri_loss.detach().cpu().item()
+                }
+                    })
+                Cum_gamma=Cum_gamma*self.gamma
+                s=s_p
+
+                # TODO: if done episode
+                if done or step==(self.max_steps-1):
+                    print("DONE")
+                    self.episodes_states[self.current_episode+1]=[]
+                    self.episodes_action[self.current_episode+1]=[]
+                    self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
+                    self.current_episode=self.current_episode+1
+                    break
+
+
+            msg= ("\n").join(
+                [k+" {l:.8f}".format(l=( np.mean(np.array(list(map( lambda st: self.episodes_losses[self.current_episode-1][st][k],list(range(step)) )))) )) for k in self.model.losses.keys()] \
+                + ["Rewards mean {rm:.8f} Rewards std {rstd:.8f} Rewards sum {rs:.8f}".format(
+                               rm=np.mean(np.array(self.episodes_rewards[self.current_episode-1])),
+                               rstd=np.std(np.array(self.episodes_rewards[self.current_episode-1])),
+                               rs=np.sum(np.array(self.episodes_rewards[self.current_episode-1]))
+                               )])
+            tqdm.write(
+              msg
+          )
+          #save history
+
+        np.save(os.path.join(self.res_dir,'STATES.npy'), self.episodes_states)
+        np.save(os.path.join(self.res_dir,'ACTIONS.npy'), self.episodes_action)
+        np.save(os.path.join(self.res_dir,'REWARDS.npy'), self.episodes_rewards)
+        np.save(os.path.join(self.res_dir,'LOSSES.npy'), self.episodes_losses) 
