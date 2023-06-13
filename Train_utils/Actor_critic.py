@@ -135,7 +135,6 @@ class Episodic_learning(object):
 
                 # TODO: if done episode
                 if done or step==(self.max_steps-1):
-                    print("DONE")
                     self.episodes_states[self.current_episode+1]=[]
                     self.episodes_action[self.current_episode+1]=[]
                     self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
@@ -264,7 +263,6 @@ class n_step_learning(Episodic_learning):
                 Cum_gamma=Cum_gamma*self.gamma
 
                 if done or step==(self.max_steps-1):
-                    print("DONE")
                     self.episodes_states[self.current_episode+1]=[]
                     self.episodes_action[self.current_episode+1]=[]
                     self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
