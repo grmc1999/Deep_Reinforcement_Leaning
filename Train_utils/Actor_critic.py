@@ -175,6 +175,7 @@ class n_step_learning(Episodic_learning):
         R=[]
         pA=[]
         A=[]
+        d=[]
 
         for i in range(n):
             self.episodes_states[self.current_episode].append(s)
@@ -196,10 +197,12 @@ class n_step_learning(Episodic_learning):
             R.append(torch.tensor([[reward]]))
             pA.append(pa)
             A.append(a.unsqueeze(-1))
+            d.append(torch.tensor([[done]]))
             if done:
                 break
 
-        return torch.cat(S.append(s)),torch.cat(R),torch.cat(pA),torch.cat(A),done
+        print(S.append(s))
+        return torch.cat(S.append(s)),torch.cat(R),torch.cat(pA),torch.cat(A),torch.cat(d)
     
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
 
