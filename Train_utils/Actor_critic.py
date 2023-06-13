@@ -192,7 +192,7 @@ class n_step_learning(Episodic_learning):
             self.episodes_action[self.current_episode].append(a.item())
             self.episodes_rewards[self.current_episode].append(reward)
 
-            R.append(reward)
+            R.append(torch.tensor([[reward]]))
             pA.append(pa)
             A.append(a)
             if done:

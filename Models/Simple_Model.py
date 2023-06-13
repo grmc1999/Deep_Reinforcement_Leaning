@@ -114,17 +114,18 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
 
         S=np.array(S)
         #TODO: modificar para entradas muliples
-        logprobs=torch.log(prob_actions) #[n,3]
-        selected_logprobs=logprobs[np.arange(prob_actions.shape[0]),sampled_actions] #[n,1]
-        self.compute_delta(R,self.gamma,S[:-1],S[1:],done)
+        logprobs=torch.log(pA) #[n,3]
+        selected_logprobs=logprobs[np.arange(pA.shape[0]),A] #[n,1]
+        delta=self.compute_delta(R,self.gamma,S[:-1],S[1:],done)
         losses=cumulate_gama*delta*selected_logprobs
         return -losses.sum()
     
-    def Actor_loss_TD(self,cumulate_gama,delta,states,prob_actions,sampled_actions):
+    def Actor_loss_TD(self,cumulate_gama,S,pA,A,R,done):
 
         #prob_actions=self.Actor.forward(states)
-        logprobs=torch.log(prob_actions)
-        selected_logprobs=logprobs[np.arange(prob_actions.shape[0]),sampled_actions]
+        logprobs=torch.log(pA)
+        selected_logprobs=logprobs[np.arange(pA.shape[0]),A]
+        delta=self.compute_n_delta(self,R,self.gamma,S,done)
         losses=cumulate_gama*delta*selected_logprobs
         return -losses.sum()
 
