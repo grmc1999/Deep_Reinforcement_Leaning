@@ -194,7 +194,7 @@ class n_step_learning(Episodic_learning):
 
             R.append(torch.tensor([[reward]]))
             pA.append(pa)
-            A.append(a)
+            A.append(a.unsqueeze(-1))
             if done:
                 break
 
