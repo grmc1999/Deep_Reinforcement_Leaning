@@ -103,12 +103,35 @@ class Neural_Net_Actor_Critic(nn.Module):
 
 class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
     def __init__(self,Actor_model,Critic_model,gamma=0.99,norm=(lambda x:x**2)):
-        super(Neural_Net_Actor_Critic,self).__init__()
+        super(Neural_Net_n_step_Actor_Critic,self).__init__(Actor_model,Critic_model,gamma,norm)
     
-    #TODO: redefine compute delta
-    def compute_delta(self,R,gamma,s,s_p,done):
+    def compute_n_delta(self,R,gamma,S,done):
+        G=(gamma**np.arange(len(R)))*R+(gamma**len(R))*self.cri(S[-1]).detach()
+        delta=G-self.cri(S[0])
+        return delta
+    
+    def Actor_loss_nTD(self,cumulate_gama,S,pA,A,R,done):
+
+        S=np.array(S)
+        #TODO: modificar para entradas muliples
+        logprobs=torch.log(prob_actions) #[n,3]
+        selected_logprobs=logprobs[np.arange(prob_actions.shape[0]),sampled_actions] #[n,1]
+        self.compute_delta(R,self.gamma,S[:-1],S[1:],done)
+        losses=cumulate_gama*delta*selected_logprobs
+        return -losses.sum()
+    
+    def Actor_loss_TD(self,cumulate_gama,delta,states,prob_actions,sampled_actions):
+
+        #prob_actions=self.Actor.forward(states)
+        logprobs=torch.log(prob_actions)
+        selected_logprobs=logprobs[np.arange(prob_actions.shape[0]),sampled_actions]
+        losses=cumulate_gama*delta*selected_logprobs
+        return -losses.sum()
+
 
     #TODO: Decide 
+    #OP1: n TD deltas
+    #OP2: 1 n step TD delta
         
         
 

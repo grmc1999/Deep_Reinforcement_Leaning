@@ -193,18 +193,13 @@ class n_step_learning(Episodic_learning):
             self.episodes_action[self.current_episode].append(a.item())
             self.episodes_rewards[self.current_episode].append(reward)
 
-            #s=s_p.detach()
-            #sabe
             R.append(reward)
             pA.append(pa)
             A.append(a)
             if done:
                 break
-            #R
-            #pA
-            #A
 
-        return S,R,pA,A,done
+        return torch.cat(S),torch.cat(R),torch.cat(pA),torch.cat(A),done
     
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
 
@@ -224,15 +219,13 @@ class n_step_learning(Episodic_learning):
             for step in tqdm(range(self.max_steps)):
                 
 
-                s,s_p,reward,p_actions,action,done=self.run_episode_step(s)
-
-                if modified_reward:
-                    reward=reward*step
+                S,R,pA,A,done=self.run_episode_n_steps(s,self.n_steps)
 
                 if step==(self.max_steps-1):
                     done=True
 
-                delta=self.model.compute_delta(reward,self.gamma,s,s_p,done)
+                #delta=self.model.compute_delta(reward,self.gamma,s,s_p,done)
+                delta=self.model.compute_delta(R,self.gamma,S,done)
 
                 Act_loss=self.model.Actor_loss(
                     cumulate_gama=Cum_gamma,
@@ -266,10 +259,10 @@ class n_step_learning(Episodic_learning):
                     "Critic_loss":Cri_loss.detach().cpu().item()
                 }
                     })
+                
+                #TODO: Cummulate gamma considering steps
                 Cum_gamma=Cum_gamma*self.gamma
-                s=s_p
 
-                # TODO: if done episode
                 if done or step==(self.max_steps-1):
                     print("DONE")
                     self.episodes_states[self.current_episode+1]=[]
