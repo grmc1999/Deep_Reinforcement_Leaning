@@ -108,7 +108,7 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
     def compute_n_delta(self,R,gamma,S,done):
         G=(gamma**np.arange(len(R)))*R+(gamma**len(R))*self.cri(S[-1]).detach()
         delta=G-self.cri(S[0])
-        return delta
+        return delta,G
     
     def Actor_loss_nTD(self,cumulate_gama,S,pA,A,R,done):
 
@@ -120,19 +120,19 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         losses=cumulate_gama*delta*selected_logprobs
         return -losses.sum()
     
-    def Actor_loss_TD(self,cumulate_gama,S,pA,A,R,done):
+    def Actor_loss_G(self,cumulate_gama,S,pA,A,R,done):
 
         #prob_actions=self.Actor.forward(states)
         logprobs=torch.log(pA)
         selected_logprobs=logprobs[np.arange(pA.shape[0]),A]
-        delta=self.compute_n_delta(self,R,self.gamma,S,done)
-        losses=cumulate_gama*delta*selected_logprobs
+        _,G=self.compute_n_delta(self,R,self.gamma,S,done)
+        losses=cumulate_gama*G*selected_logprobs
         return -losses.sum()
 
 
     #TODO: Decide 
     #OP1: n TD deltas
-    #OP2: 1 n step TD delta
+    #OP2: G_t:t+n
         
         
 

@@ -188,6 +188,7 @@ class n_step_learning(Episodic_learning):
 
             s_p, reward, done, _,_=self.env.step(a.item())
             s_p=torch.from_numpy(s_p).float().unsqueeze(0)
+            s=s_p
 
             self.episodes_action[self.current_episode].append(a.item())
             self.episodes_rewards[self.current_episode].append(reward)
@@ -198,7 +199,7 @@ class n_step_learning(Episodic_learning):
             if done:
                 break
 
-        return torch.cat(S),torch.cat(R),torch.cat(pA),torch.cat(A),done
+        return torch.cat(S.append(s)),torch.cat(R),torch.cat(pA),torch.cat(A),done
     
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
 
@@ -223,7 +224,7 @@ class n_step_learning(Episodic_learning):
                 if step==(self.max_steps-1):
                     done=True
 
-                #delta=self.model.compute_delta(reward,self.gamma,s,s_p,done)
+                #TODO: Compute_n_delta
                 delta=self.model.compute_delta(R,self.gamma,S,done)
 
                 Act_loss=self.model.Actor_loss(
@@ -260,7 +261,8 @@ class n_step_learning(Episodic_learning):
                     })
                 
                 #TODO: Cummulate gamma considering steps
-                Cum_gamma=Cum_gamma*self.gamma
+                Cum_gamma=Cum_gamma*(self.gamma**self.n_steps)
+                s=S[-1]
 
                 if done or step==(self.max_steps-1):
                     self.episodes_states[self.current_episode+1]=[]
