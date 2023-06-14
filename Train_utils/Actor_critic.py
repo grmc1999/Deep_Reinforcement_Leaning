@@ -263,7 +263,7 @@ class n_step_learning(Episodic_learning):
                 Cum_gamma=Cum_gamma*(self.gamma**self.n_steps)
                 s=S[-1]
 
-                if done[-1,0]. or step==(self.max_steps-1):
+                if done[-1,0] or step==(self.max_steps-1):
                     self.episodes_states[self.current_episode+1]=[]
                     self.episodes_action[self.current_episode+1]=[]
                     self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
