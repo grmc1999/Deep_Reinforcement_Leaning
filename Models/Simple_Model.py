@@ -91,7 +91,12 @@ class Neural_Net_Actor_Critic(nn.Module):
         #prob_actions=self.Actor.forward(states)
         logprobs=torch.log(prob_actions)
         #selected_logprobs=logprobs[np.arange(prob_actions.shape[0]),sampled_actions]
-        selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(prob_actions.shape[0]).reshape(-1,1)),sampled_actions),dim=1).T.detach().numpy()] #[n,1]
+        print(torch.tensor(np.arange(prob_actions.shape[0]).reshape(-1,1)))
+        print(sampled_actions)
+        selected_logprobs=logprobs[torch.cat((
+            torch.tensor(np.arange(prob_actions.shape[0]).reshape(-1,1)),
+            sampled_actions
+            ),dim=1).T.detach().numpy()] #[n,1]
         losses=cumulate_gama*delta*selected_logprobs
         return -losses.sum()
     
