@@ -203,6 +203,7 @@ class n_step_learning(Episodic_learning):
                 break
 
         S.append(s)
+        print(S)
         torch.cat(S)
         torch.cat(R)
         torch.cat(pA)
