@@ -203,6 +203,11 @@ class n_step_learning(Episodic_learning):
                 break
 
         S.append(s)
+        torch.cat(S)
+        torch.cat(R)
+        torch.cat(pA)
+        torch.cat(A)
+        torch.cat(d)
         return torch.cat(S),torch.cat(R),torch.cat(pA),torch.cat(A),torch.cat(d)
     
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
