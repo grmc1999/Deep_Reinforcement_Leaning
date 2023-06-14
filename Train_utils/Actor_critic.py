@@ -203,12 +203,6 @@ class n_step_learning(Episodic_learning):
                 break
 
         S.append(s)
-        print(S)
-        torch.cat(S)
-        torch.cat(R)
-        torch.cat(pA)
-        torch.cat(A)
-        torch.cat(d)
         return torch.cat(S),torch.cat(R),torch.cat(pA),torch.cat(A),torch.cat(d)
     
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
@@ -226,7 +220,7 @@ class n_step_learning(Episodic_learning):
                 self.phi=self.sch_f((episode%T)/T)
             else:
                 self.phi=phi
-            for step in tqdm(range(self.max_steps)):
+            for step in range(self.max_steps):
                 
 
                 S,R,pA,A,done=self.run_episode_n_steps(s,self.n_steps)
