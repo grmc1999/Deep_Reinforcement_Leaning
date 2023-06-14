@@ -106,27 +106,34 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         super(Neural_Net_n_step_Actor_Critic,self).__init__(Actor_model,Critic_model,gamma,norm)
     
     def compute_n_delta(self,R,gamma,S,done):
-        G=(gamma**np.arange(len(R)))*R+(gamma**len(R))*self.cri(S[-1]).detach()
+        G=torch.sum(torch.tensor(gamma**np.arange(len(R)).reshape(-1,1))*R) + (gamma**len(R))*self.cri(S[-1]).detach()
         delta=G-self.cri(S[0])
         return delta,G
-    
-    def Actor_loss_nTD(self,cumulate_gama,S,pA,A,R,done):
 
-        S=np.array(S)
+    def Actor_loss_TD(self,cumulate_gama,S,pA,A,R,done):
         #TODO: modificar para entradas muliples
         logprobs=torch.log(pA) #[n,3]
-        selected_logprobs=logprobs[np.arange(pA.shape[0]),A] #[n,1]
-        delta=self.compute_delta(R,self.gamma,S[:-1],S[1:],done)
+        selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
+        delta=torch.cat([self.compute_delta(r,self.gamma,s,s_p,d) for r,s,s_p,d in zip(R,S[:-1],S[1:],done)])
         losses=cumulate_gama*delta*selected_logprobs
         return -losses.sum()
-    
+
     def Actor_loss_G(self,cumulate_gama,S,pA,A,R,done):
 
         #prob_actions=self.Actor.forward(states)
         logprobs=torch.log(pA)
-        selected_logprobs=logprobs[np.arange(pA.shape[0]),A]
-        _,G=self.compute_n_delta(self,R,self.gamma,S,done)
+        selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
+        _,G=self.compute_n_delta(R,self.gamma,S,done)
         losses=cumulate_gama*G*selected_logprobs
+        return -losses.sum()
+    
+    def Actor_loss_TTD(self,cumulate_gama,S,pA,A,R,done):
+
+        #prob_actions=self.Actor.forward(states)
+        logprobs=torch.log(pA)
+        selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
+        delta,_=self.compute_n_delta(R,self.gamma,S,done)
+        losses=cumulate_gama*delta*selected_logprobs
         return -losses.sum()
 
 

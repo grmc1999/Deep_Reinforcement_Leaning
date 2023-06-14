@@ -164,10 +164,11 @@ class Episodic_learning(object):
         
 
 class n_step_learning(Episodic_learning):
-    def __init__(self,model,free_input,n_steps,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,multi_opt=True,max_steps=200,cuda=False,sch_f=lambda x:x):
+    def __init__(self,model,free_input,n_steps,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,act_loss_type="Actor_loss_TD",multi_opt=True,max_steps=200,cuda=False,sch_f=lambda x:x):
         super().__init__(model,free_input,env,Actor_optimizer_params,Critic_optimizer_params,res_dir,phi,multi_opt,max_steps,cuda,sch_f)
 
         self.n_steps=n_steps
+        self.act_loss_type=act_loss_type
     
     def run_episode_n_steps(self,s,n):
         # Run N steps and use error over V_t
@@ -201,8 +202,8 @@ class n_step_learning(Episodic_learning):
             if done:
                 break
 
-        print(S.append(s))
-        return torch.cat(S.append(s)),torch.cat(R),torch.cat(pA),torch.cat(A),torch.cat(d)
+        S.append(s)
+        return torch.cat(S),torch.cat(R),torch.cat(pA),torch.cat(A),torch.cat(d)
     
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
 
@@ -228,15 +229,10 @@ class n_step_learning(Episodic_learning):
                     done=True
 
                 #TODO: Compute_n_delta
-                delta=self.model.compute_delta(R,self.gamma,S,done)
+                delta=self.model.compute_n_delta(R,self.gamma,S,done)
 
-                Act_loss=self.model.Actor_loss(
-                    cumulate_gama=Cum_gamma,
-                    delta=delta.detach(),
-                    states=s,
-                    prob_actions=p_actions,
-                    sampled_actions=action
-                )
+                args=(Cum_gamma,S,pA,A,R,done)
+                Act_loss=getattr(self.model,self.act_loss_type)(*(args))
 
                 Cri_loss=self.model.Critic_loss(
                     delta=delta,
