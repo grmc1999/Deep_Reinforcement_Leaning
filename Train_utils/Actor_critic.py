@@ -267,7 +267,7 @@ class n_step_learning(Episodic_learning):
                 
                 #TODO: Cummulate gamma considering steps
                 Cum_gamma=Cum_gamma*(self.gamma**self.n_steps)
-                s=S[-1]
+                s=S[-1].unsqueeze(0)
 
                 if done[-1,0] or step==(self.max_steps-1):
                     self.episodes_states[self.current_episode+1]=[]
