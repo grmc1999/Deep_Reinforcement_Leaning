@@ -230,7 +230,7 @@ class n_step_learning(Episodic_learning):
 
                 #TODO: Compute_n_delta
                 delta,_=self.model.compute_n_delta(R,self.gamma,S,done)
-                print(delta)
+                #print(delta)
 
                 args=(Cum_gamma,S,pA,A,R,done)
                 Act_loss=getattr(self.model,self.act_loss_type)(*(args))
