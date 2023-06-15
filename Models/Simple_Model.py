@@ -119,8 +119,10 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         logprobs=torch.log(pA) #[n,3]
         selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
         delta=torch.cat([self.compute_delta(r,self.gamma,s,s_p,d).detach() for r,s,s_p,d in zip(R,S[:-1],S[1:],done)])
+        print(delta)
+        print(len(R))
         losses=cumulate_gama*delta*selected_logprobs
-        return -losses.sum()
+        return -losses.sum()/len(R)
 
     def Actor_loss_G(self,cumulate_gama,S,pA,A,R,done):
 
