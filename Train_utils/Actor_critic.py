@@ -226,7 +226,7 @@ class n_step_learning(Episodic_learning):
 
                 S,R,pA,A,done=self.run_episode_n_steps(s,self.n_steps)
 
-                if int_step==(self.max_steps-1):
+                if int_step>=(self.max_steps):
                     done[-1,0]=True
 
                 #TODO: Compute_n_delta
@@ -266,7 +266,7 @@ class n_step_learning(Episodic_learning):
                 int_step=int_step+len(R)
                 s=S[-1].unsqueeze(0)
 
-                if done[-1,0] or int_step>=(self.max_steps-1):
+                if done[-1,0] or int_step>=(self.max_steps):
                     self.episodes_states[self.current_episode+1]=[]
                     self.episodes_action[self.current_episode+1]=[]
                     self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
