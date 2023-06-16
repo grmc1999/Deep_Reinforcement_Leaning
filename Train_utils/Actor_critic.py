@@ -213,6 +213,7 @@ class n_step_learning(Episodic_learning):
             s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
             Cum_gamma=1
             self.episodes_losses[self.current_episode]={0:{}}
+            int_step=0
 
             #MODIFY self.phi DINAMICALLY
             #self.phi=np.cos()
@@ -225,7 +226,7 @@ class n_step_learning(Episodic_learning):
 
                 S,R,pA,A,done=self.run_episode_n_steps(s,self.n_steps)
 
-                if step==(self.max_steps-1):
+                if int_step==(self.max_steps-1):
                     done[-1,0]=True
 
                 #TODO: Compute_n_delta
@@ -261,10 +262,11 @@ class n_step_learning(Episodic_learning):
                     })
                 
                 #TODO: Cummulate gamma considering steps
-                Cum_gamma=Cum_gamma*(self.gamma**self.n_steps)
+                Cum_gamma=Cum_gamma*(self.gamma**(len(S)))
+                int_step=int_step+len(S)
                 s=S[-1].unsqueeze(0)
 
-                if done[-1,0] or step==(self.max_steps-1):
+                if done[-1,0] or int_step==(self.max_steps-1):
                     self.episodes_states[self.current_episode+1]=[]
                     self.episodes_action[self.current_episode+1]=[]
                     self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
