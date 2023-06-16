@@ -226,7 +226,7 @@ class n_step_learning(Episodic_learning):
                 S,R,pA,A,done=self.run_episode_n_steps(s,self.n_steps)
 
                 if step==(self.max_steps-1):
-                    done=True
+                    done[-1,0]=True
 
                 #TODO: Compute_n_delta
                 delta,_=self.model.compute_n_delta(R,self.gamma,S,done)
