@@ -110,7 +110,10 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         super(Neural_Net_n_step_Actor_Critic,self).__init__(Actor_model,Critic_model,gamma,norm)
     
     def compute_n_delta(self,R,gamma,S,done):
-        G=torch.sum(torch.tensor(gamma**np.arange(len(R)).reshape(-1,1))*R) + (gamma**len(R))*self.cri(S[-1]).detach()
+        if done[-1]:
+            G=torch.sum((torch.tensor(gamma**np.arange(len(R)).reshape(-1,1)))*R)
+        else:
+            G=torch.sum((torch.tensor(gamma**np.arange(len(R)).reshape(-1,1)))*R) + (gamma**len(R))*(self.cri(S[-1])).detach()
         delta=G-self.cri(S[0])
         return delta,G
 #TODO: Check cumulate gammas
@@ -119,13 +122,11 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         logprobs=torch.log(pA) #[n,3]
         selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
         cumulate_gama=cumulate_gama*((self.gamma)**torch.tensor(np.arange(pA.shape[0])))
-        delta=torch.cat([self.compute_delta(r,self.gamma,s,s_p,d).detach() for r,s,s_p,d in zip(R,S[:-1],S[1:],done)])
+        delta=torch.cat([(self.compute_delta(r,self.gamma,s,s_p,d)).detach() for r,s,s_p,d in zip(R,S[:-1],S[1:],done)])
         losses=cumulate_gama*delta*selected_logprobs
         return -losses.sum()/len(R)
 
     def Actor_loss_G(self,cumulate_gama,S,pA,A,R,done):
-
-        #prob_actions=self.Actor.forward(states)
         logprobs=torch.log(pA)
         selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
         _,G=self.compute_n_delta(R,self.gamma,S,done)
