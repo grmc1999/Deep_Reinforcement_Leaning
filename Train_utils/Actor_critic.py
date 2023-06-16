@@ -262,8 +262,8 @@ class n_step_learning(Episodic_learning):
                     })
                 
                 #TODO: Cummulate gamma considering steps
-                Cum_gamma=Cum_gamma*(self.gamma**(len(S)))
-                int_step=int_step+len(S)
+                Cum_gamma=Cum_gamma*(self.gamma**(len(R)))
+                int_step=int_step+len(R)
                 s=S[-1].unsqueeze(0)
 
                 if done[-1,0] or int_step>=(self.max_steps-1):
