@@ -273,7 +273,7 @@ class n_step_learning(Episodic_learning):
 
 
             msg= ("\n").join(
-                [k+" {l:.8f}".format(l=( np.mean(np.array(list(map( lambda st: self.episodes_losses[self.current_episode-1][st][k],list(range(step)) )))) )) for k in self.model.losses.keys()] \
+                [k+" {l:.15f}".format(l=( np.mean(np.array(list(map( lambda st: self.episodes_losses[self.current_episode-1][st][k],list(range(step)) )))) )) for k in self.model.losses.keys()] \
                 + ["Rewards mean {rm:.8f} Rewards std {rstd:.8f} Rewards sum {rs:.8f}".format(
                                rm=np.mean(np.array(self.episodes_rewards[self.current_episode-1])),
                                rstd=np.std(np.array(self.episodes_rewards[self.current_episode-1])),
