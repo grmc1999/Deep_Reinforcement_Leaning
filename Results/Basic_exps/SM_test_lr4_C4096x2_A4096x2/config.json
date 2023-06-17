@@ -3,7 +3,7 @@
         "name":"Neural_Net_module",
         "args":{"state_size":4,
             "action_size":2,
-            "layer_sizes":[32,32],
+            "layer_sizes":[4096,4096],
             "activators":[
                 {"name":"LeakyReLU","args":{}},
                 {"name":"LeakyReLU","args":{}},
@@ -15,12 +15,11 @@
         "name":"Neural_Net_module",
         "args":{"state_size":4,
         "action_size":1,
-        "layer_sizes":[256,64,2],
+        "layer_sizes":[4096,4096],
         "activators":[
             {"name":"LeakyReLU","args":{}},
             {"name":"LeakyReLU","args":{}},
-            {"name":"LeakyReLU","args":{}},
-            {"name":"ReLU","args":{}}
+            {"name":"Identity","args":{}}
         ],
         "dropouts":null}
     },
@@ -32,11 +31,12 @@
         "name":"CartPole-v1"
     },
     "framework":{
-        "name":"Episodic_learning",
+        "name":"n_step_learning",
         "args":{"free_input":0,
+        "n_steps":1,
         "Actor_optimizer_params":{
-            "name":"SGD",
-            "args":{"lr":1e-3}
+            "name":"Adam",
+            "args":{"lr":1e-4}
         },
         "Critic_optimizer_params":{"lr":1e-7},
         "phi":0.5,
