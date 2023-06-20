@@ -3,6 +3,7 @@ import torch
 from torch import nn
 import numpy as np
 import torch.nn.functional as F
+from torch.distributions import Categorical
 
 
 class Neural_Net_module(nn.Module):
@@ -117,30 +118,39 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         delta=G-self.cri(S[0])
         return delta,G
 #TODO: Check cumulate gammas
-    def Actor_loss_TD(self,cumulate_gama,S,pA,A,R,done):
+    def Actor_loss_TD(self,cumulate_gama,S,pA,A,R,done,entropy_w=0):
         #TODO: modificar para entradas muliples
         logprobs=torch.log(pA) #[n,3]
         selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
         cumulate_gama=cumulate_gama*((self.gamma)**torch.tensor(np.arange(pA.shape[0])))
         delta=torch.cat([(self.compute_delta(r,self.gamma,s,s_p,d)).detach() for r,s,s_p,d in zip(R,S[:-1],S[1:],done)])
         losses=cumulate_gama*delta*selected_logprobs
-        return -losses.sum()/len(R)
+        if entropy_w>0:
+            return -losses.sum()/len(R) - entropy_w*(Categorical(pA).entropy())
+        else:
+            return -losses.sum()/len(R)
 
-    def Actor_loss_G(self,cumulate_gama,S,pA,A,R,done):
+    def Actor_loss_G(self,cumulate_gama,S,pA,A,R,done,entropy_w=0):
         logprobs=torch.log(pA)
         selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
         _,G=self.compute_n_delta(R,self.gamma,S,done)
         losses=cumulate_gama*G*selected_logprobs
-        return -losses.sum()/len(R)
+        if entropy_w>0:
+            return -losses.sum()/len(R) - entropy_w*(Categorical(pA).entropy())
+        else:
+            return -losses.sum()/len(R)
     
-    def Actor_loss_TTD(self,cumulate_gama,S,pA,A,R,done):
+    def Actor_loss_TTD(self,cumulate_gama,S,pA,A,R,done,entropy_w=0):
 
         #prob_actions=self.Actor.forward(states)
         logprobs=torch.log(pA)
         selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
         delta,_=self.compute_n_delta(R,self.gamma,S,done)
         losses=cumulate_gama*(delta.detach())*selected_logprobs
-        return -losses.sum()/len(R)
+        if entropy_w>0:
+            return -losses.sum()/len(R) - entropy_w*(Categorical(pA).entropy())
+        else:
+            return -losses.sum()/len(R)
 
 
     #TODO: Decide 
