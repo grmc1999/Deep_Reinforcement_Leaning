@@ -149,9 +149,9 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         delta,_=self.compute_n_delta(R,self.gamma,S,done)
         losses=cumulate_gama*(delta.detach())*selected_logprobs
         if self.entropy_w>0:
-            return -losses.sum()/len(R) - self.entropy_w*(Categorical(pA).entropy())
+            return -losses.sum()/len(R) - self.entropy_w*(Categorical(pA).entropy()) - 100
         else:
-            return -losses.sum()/len(R)
+            return -losses.sum()/len(R) - 100
 
 
     #TODO: Decide 
