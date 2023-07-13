@@ -127,7 +127,7 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         delta=torch.cat([(self.compute_delta(r,self.gamma,s,s_p,d)).detach() for r,s,s_p,d in zip(R,S[:-1],S[1:],done)])
         losses=cumulate_gama*delta*selected_logprobs
         if self.entropy_w>0:
-            return -losses.sum()/len(R) - self.entropy_w*(Categorical(pA).entropy())
+            return -losses.sum()/len(R) - self.entropy_w*(torch.tensor(list(map(lambda p:Categorical(p).entropy(),pA))).mean())
         else:
             return -losses.sum()/len(R)
 
@@ -137,7 +137,7 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         _,G=self.compute_n_delta(R,self.gamma,S,done)
         losses=cumulate_gama*G*selected_logprobs
         if self.entropy_w>0:
-            return -losses.sum()/len(R) - self.entropy_w*(Categorical(pA).entropy())
+            return -losses.sum()/len(R) - self.entropy_w*(torch.tensor(list(map(lambda p:Categorical(p).entropy(),pA))).mean())
         else:
             return -losses.sum()/len(R)
     
@@ -149,9 +149,9 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
         delta,_=self.compute_n_delta(R,self.gamma,S,done)
         losses=cumulate_gama*(delta.detach())*selected_logprobs
         if self.entropy_w>0:
-            return -losses.sum()/len(R) - self.entropy_w*(Categorical(pA).entropy()) - 100
+            return -losses.sum()/len(R) - self.entropy_w*(torch.tensor(list(map(lambda p:Categorical(p).entropy(),pA))).mean())
         else:
-            return -losses.sum()/len(R) - 100
+            return -losses.sum()/len(R)
 
 
     #TODO: Decide 
