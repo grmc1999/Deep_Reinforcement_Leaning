@@ -304,6 +304,7 @@ class n_step_learning_grad_obs(n_step_learning):
             s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
             Cum_gamma=1
             self.episodes_losses[self.current_episode]={0:{}}
+            self.episodes_grads[self.current_episode]={0:0}
             int_step=0
 
             #MODIFY self.phi DINAMICALLY
