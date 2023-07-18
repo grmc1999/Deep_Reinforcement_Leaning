@@ -295,6 +295,7 @@ class n_step_learning(Episodic_learning):
 class n_step_learning_grad_obs(n_step_learning):
     def __init__(self,model,**kwargs):
         super().__init__(model,**kwargs)
+        self.episodes_grads[self.current_episode]={0:0}
     
     def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
 
