@@ -290,3 +290,98 @@ class n_step_learning(Episodic_learning):
         np.save(os.path.join(self.res_dir,'ACTIONS.npy'), self.episodes_action)
         np.save(os.path.join(self.res_dir,'REWARDS.npy'), self.episodes_rewards)
         np.save(os.path.join(self.res_dir,'LOSSES.npy'), self.episodes_losses) 
+
+
+class n_step_learning_grad_obs(n_step_learning):
+    def __init__(self,model,**kwargs):
+        super().__init__(model,**kwargs)
+    
+    def Train(self,train_episodes,T,phi,static=True,modified_reward=False):
+
+        
+        for episode in tqdm(range(train_episodes)):
+            s=self.env.reset()[0]
+            s=torch.from_numpy(s).float().unsqueeze(0) #[1,states]
+            Cum_gamma=1
+            self.episodes_losses[self.current_episode]={0:{}}
+            int_step=0
+
+            #MODIFY self.phi DINAMICALLY
+            #self.phi=np.cos()
+            if not static:
+                self.phi=self.sch_f((episode%T)/T)
+            else:
+                self.phi=phi
+            for step in range(self.max_steps):
+                
+
+                S,R,pA,A,done=self.run_episode_n_steps(s,self.n_steps)
+                int_step=int_step+len(R)
+
+                if int_step>=(self.max_steps):
+                    done[-1,0]=True
+
+                #TODO: Compute_n_delta
+                delta,_=self.model.compute_n_delta(R,self.gamma,S,done)
+                #print(delta)
+
+                args=(Cum_gamma,S,pA,A,R,done)
+                Act_loss=getattr(self.model,self.act_loss_type)(*(args))
+
+                Cri_loss=self.model.Critic_loss(
+                    delta=delta,
+                    states=s
+                )
+
+                if self.multi_opt:
+                    self.Ac_optim.zero_grad()
+                    self.Cr_optim.zero_grad()
+                    Act_loss.backward()
+                    self.Ac_optim.step()
+
+                    Cri_loss.backward()
+                    self.Cr_optim.step()
+                else:
+                    self.Ac_optim.zero_grad()
+                    Total_loss=self.phi*Cri_loss+(1-self.phi)*Act_loss
+                    Total_loss.backward()
+                    
+                    self.Ac_optim.step()
+
+                self.episodes_losses[self.current_episode].update({step:{
+                    "Actor_loss":Act_loss.detach().cpu().item(),
+                    "Critic_loss":Cri_loss.detach().cpu().item()
+                }
+                    })
+                self.episodes_grads[self.current_episode].update({step:np.hstack([p.grad.numpy().reshape(1,-1) for p in self.model.parameters()])
+                    })
+                
+                #TODO: Cummulate gamma considering steps
+                Cum_gamma=Cum_gamma*(self.gamma**(len(R)))
+                s=S[-1].unsqueeze(0)
+
+                if done[-1,0] or int_step>=(self.max_steps):
+                    self.episodes_states[self.current_episode+1]=[]
+                    self.episodes_action[self.current_episode+1]=[]
+                    self.episodes_rewards[self.current_episode+1]=[]#consider size of rewards equal to 1 less than action and states
+                    self.current_episode=self.current_episode+1
+                    break
+
+
+            msg= ("\n").join(
+                [k+" {l:.15f}".format(l=( np.mean(np.array(list(map( lambda st: self.episodes_losses[self.current_episode-1][st][k],list(range(step)) )))) )) for k in self.model.losses.keys()] \
+                + ["Rewards mean {rm:.8f} Rewards std {rstd:.8f} Rewards sum {rs:.8f}".format(
+                               rm=np.mean(np.array(self.episodes_rewards[self.current_episode-1])),
+                               rstd=np.std(np.array(self.episodes_rewards[self.current_episode-1])),
+                               rs=np.sum(np.array(self.episodes_rewards[self.current_episode-1]))
+                               )])
+            tqdm.write(
+              msg
+          )
+          #save history
+
+        np.save(os.path.join(self.res_dir,'STATES.npy'), self.episodes_states)
+        np.save(os.path.join(self.res_dir,'ACTIONS.npy'), self.episodes_action)
+        np.save(os.path.join(self.res_dir,'REWARDS.npy'), self.episodes_rewards)
+        np.save(os.path.join(self.res_dir,'LOSSES.npy'), self.episodes_losses) 
+        np.save(os.path.join(self.res_dir,'grads.npy'), self.episodes_grads) 
