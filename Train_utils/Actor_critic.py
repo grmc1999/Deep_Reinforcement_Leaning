@@ -306,16 +306,18 @@ class n_step_learning_grad_obs(n_step_learning):
             Cum_gamma=1
             self.episodes_losses[self.current_episode]={0:{}}
             self.episodes_grads[self.current_episode]={0:0}
+            self.episodes_delta[self.current_episode]={0:0}
+            self.episodes_return[self.current_episode]={0:0}
+            self.episodes_value[self.current_episode]={0:0}
+            self.episodes_actions[self.current_episode]={0:0}
+            
             int_step=0
 
-            #MODIFY self.phi DINAMICALLY
-            #self.phi=np.cos()
             if not static:
                 self.phi=self.sch_f((episode%T)/T)
             else:
                 self.phi=phi
-            for step in range(self.max_steps):
-                
+            for step in range(self.max_steps):                
 
                 S,R,pA,A,done=self.run_episode_n_steps(s,self.n_steps)
                 int_step=int_step+len(R)
@@ -323,9 +325,8 @@ class n_step_learning_grad_obs(n_step_learning):
                 if int_step>=(self.max_steps):
                     done[-1,0]=True
 
-                #TODO: Compute_n_delta
-                delta,_=self.model.compute_n_delta(R,self.gamma,S,done)
-                #print(delta)
+                delta,G=self.model.compute_n_delta(R,self.gamma,S,done)
+                v_=self.model.cri(S)
 
                 args=(Cum_gamma,S,pA,A,R,done)
                 Act_loss=getattr(self.model,self.act_loss_type)(*(args))
@@ -357,6 +358,14 @@ class n_step_learning_grad_obs(n_step_learning):
                     })
                 self.episodes_grads[self.current_episode].update({step:np.hstack([p.grad.numpy().reshape(1,-1) for p in self.model.parameters()])
                     })
+                self.episodes_delta[self.current_episode].update({step:delta.detach().numpy()})
+                self.episodes_return[self.current_episode].update({step:G.detach().numpy()})
+                self.episodes_value[self.current_episode].update({step:v_.detach().numpy()})
+                self.episodes_actions[self.current_episode].update({step:pA.detach().numpy()})
+                #TODO: save delta
+                #TODO: save G
+                #TODO: save v_
+                #TODO: save pA
                 
                 #TODO: Cummulate gamma considering steps
                 Cum_gamma=Cum_gamma*(self.gamma**(len(R)))

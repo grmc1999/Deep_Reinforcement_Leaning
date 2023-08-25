@@ -158,5 +158,63 @@ class Neural_Net_n_step_Actor_Critic(Neural_Net_Actor_Critic):
     #OP1: n TD deltas
     #OP2: G_t:t+n
         
+class DINO_n_step_Actor_Critic(Neural_Net_Actor_Critic):
+    def __init__(self,Actor_model,Critic_model,gamma=0.99,norm=(lambda x:x**2),entropy_w=0):
+        super(Neural_Net_n_step_Actor_Critic,self).__init__(Actor_model,Critic_model,gamma,norm)
+        self.entropy_w=entropy_w
+        # MAKE COPY OF Actor_model -> student, teacher
+        # DEL self.Critic
+
+    
+    def compute_n_delta(self,R,gamma,S,done):
+        if done[-1]:
+            G=torch.sum((torch.tensor(gamma**np.arange(len(R)).reshape(-1,1)))*R)
+        else:
+            G=torch.sum((torch.tensor(gamma**np.arange(len(R)).reshape(-1,1)))*R) + (gamma**len(R))*(self.cri(S[-1])).detach()
+        delta=G-self.cri(S[0])
+        return delta,G
+    
+    #def gen_history_episodes():
         
+    #def SSSL(self,module,SL_loss): 3SL #TO interchange between critic and actor
+        #Generate N views of history
+        #for each view
+            #critic forward
+            #H loss
+            #Regression loss on teacher or student
+    #def H_loss
+#TODO: Check cumulate gammas
+    def Actor_loss_TD(self,cumulate_gama,S,pA,A,R,done):
+        #TODO: modificar para entradas muliples
+        logprobs=torch.log(pA) #[n,3]
+        selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
+        cumulate_gama=cumulate_gama*((self.gamma)**torch.tensor(np.arange(pA.shape[0])))
+        delta=torch.cat([(self.compute_delta(r,self.gamma,s,s_p,d)).detach() for r,s,s_p,d in zip(R,S[:-1],S[1:],done)])
+        losses=cumulate_gama*delta*selected_logprobs
+        if self.entropy_w>0:
+            return -losses.sum()/len(R) - self.entropy_w*(torch.tensor(list(map(lambda p:Categorical(p).entropy(),pA))).mean())
+        else:
+            return -losses.sum()/len(R)
+
+    def Actor_loss_G(self,cumulate_gama,S,pA,A,R,done):
+        logprobs=torch.log(pA)
+        selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
+        _,G=self.compute_n_delta(R,self.gamma,S,done)
+        losses=cumulate_gama*G*selected_logprobs
+        if self.entropy_w>0:
+            return -losses.sum()/len(R) - self.entropy_w*(torch.tensor(list(map(lambda p:Categorical(p).entropy(),pA))).mean())
+        else:
+            return -losses.sum()/len(R)
+    
+    def Actor_loss_TTD(self,cumulate_gama,S,pA,A,R,done):
+
+        #prob_actions=self.Actor.forward(states)
+        logprobs=torch.log(pA)
+        selected_logprobs=logprobs[torch.cat((torch.tensor(np.arange(pA.shape[0]).reshape(-1,1)),A),dim=1).T.detach().numpy()] #[n,1]
+        delta,_=self.compute_n_delta(R,self.gamma,S,done)
+        losses=cumulate_gama*(delta.detach())*selected_logprobs
+        if self.entropy_w>0:
+            return -losses.sum()/len(R) - self.entropy_w*(torch.tensor(list(map(lambda p:Categorical(p).entropy(),pA))).mean())
+        else:
+            return -losses.sum()/len(R)
 
